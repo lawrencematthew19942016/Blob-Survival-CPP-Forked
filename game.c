@@ -1,12 +1,4 @@
-#include "raylib.h"
-#include "raymath.h"
-
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include <math.h>
-#include <float.h>
-#include <stdlib.h>
+#include "mainheaderfile.h"
 
 #ifdef WASM
 #include <emscripten/fetch.h>
@@ -16,8 +8,6 @@
 //? For network requests
 // #include <curl/curl.h>
 #endif
-
-#include "game.h"
 
 // global state
 // most funcs assume state pointer is valid when accessed
