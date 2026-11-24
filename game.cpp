@@ -23,10 +23,10 @@ void gamestate_create()
     // Pixel camera setup
     float virtual_ratio = (float)SCREEN_WIDTH / (float)VIRT_WIDTH;
 
-    *state = (GameState){
+    *state = GameState{
         .camera = {
-            .target = {VIRT_WIDTH / 2.0f, VIRT_HEIGHT / 2.0f},
             .offset = {VIRT_WIDTH / 2.0f, VIRT_HEIGHT / 2.0f},
+            .target = {VIRT_WIDTH / 2.0f, VIRT_HEIGHT / 2.0f},
             .rotation = 0.0f,
             .zoom = 1.0f},
         .sprite_sheet = LoadTexture(SPRITE_SHEET_PATH),
@@ -36,11 +36,11 @@ void gamestate_create()
         .dest_rect = {-virtual_ratio, -virtual_ratio, SCREEN_WIDTH + (virtual_ratio * 2), SCREEN_HEIGHT + (virtual_ratio * 2)},
 
         // Sound
-        .sound_intensity = 1.0,
+        .sound_intensity = 1.0f,
 
         // General
         .screen = MAIN_MENU,
-        .timer = (Timers){
+        .timer = Timers{
             .game_start_ts = get_current_time_millis(),
             .pause_ts = 0,
             .pickups_cleanup_ts = 0,
@@ -58,7 +58,8 @@ void gamestate_create()
             .enemy_spawn_ts = 0,
             .enemy_spawn_interval = DEFAULT_ENEMY_SPAWN_INTERVAL_MS,
         },
-        .stats = (Stats){
+
+        .stats = Stats{
             .bullet_interval = get_base_stat_value(BULLET_INTERVAL),
             .bullet_count = get_base_stat_value(BULLET_COUNT),
             .bullet_spread = get_base_stat_value(BULLET_SPREAD),
@@ -95,7 +96,7 @@ void gamestate_create()
             .player_speed = get_base_stat_value(PLAYER_SPEED),
             .shiny_chance = get_base_stat_value(SHINY_CHANCE),
         },
-        .upgrades = (Upgrades){
+        .upgrades = Upgrades{
             .bullet_level = 1,
             .splinter_level = 0,
             .spike_level = GOD ? 1 : 0,
@@ -105,7 +106,7 @@ void gamestate_create()
             .speed_level = 0,
             .shiny_level = 0,
         },
-        .available_upgrades = (Upgrades){
+        .available_upgrades = Upgrades{
             .bullet_level = 0,
             .splinter_level = 0,
             .spike_level = 0,
@@ -125,12 +126,12 @@ void gamestate_create()
         // Player
         .player_pos = world_center,
         .player_health = MAX_PLAYER_HEALTH,
-        .player_heading_dir = (Vec2){1, 0},
+        .player_heading_dir = {1, 0},
         .is_joystick_enabled = false,
         .touch_down_pos = Vector2Zero(),
         .joystick_direction = Vector2Zero(),
         .mana_count = 0,
-        .mana_particles = (Vec2 *)malloc(MAX_MANA_PARTICLES * sizeof(Vec2)),
+        .mana_particles = (Vec2 *)malloc(MAX_MANA_PARTICLES * sizeof),
         .mana_particles_count = 0,
 
         // Weapon
@@ -149,11 +150,11 @@ void gamestate_create()
         .num_enemies_per_tick = 1,
 
         // World
-        .world_dims = (Rect){0, 0, WORLD_W * TILE_SIZE * DEFAULT_SPRITE_SCALE, WORLD_H * TILE_SIZE * DEFAULT_SPRITE_SCALE},
+        .world_dims = {0, 0, WORLD_W * TILE_SIZE * DEFAULT_SPRITE_SCALE, WORLD_H * TILE_SIZE * DEFAULT_SPRITE_SCALE},
         .decorations = (Decoration *)malloc(NUM_DECORATIONS * sizeof(Decoration)),
         .pickups = (Pickup *)malloc(MAX_PICKUPS * sizeof(Pickup)),
         .pickups_count = 0,
-        .pickups_qtree = qtree_create((QRect){world_center.x, world_center.y, 32000, 32000}),
+        .pickups_qtree = qtree_create(QRect{world_center.x, world_center.y, 32000, 32000}),
 
         // UI
         .master_volume = 1.0f,
@@ -162,11 +163,10 @@ void gamestate_create()
         .main_menu_enemies_count = 0,
 
         // Others
-        .query_points = malloc(MAX_ENEMIES * sizeof(QPoint)),
+        .query_points = static_cast<QPoint *>(malloc(MAX_ENEMIES * sizeof(QPoint))),
         .num_query_points = 0,
-
         .is_show_debug_gui = false,
-        .temp = (Temp){.ct = 0, .num_enemies_drawn = 0},
+        .temp = {.ct = 0, .num_enemies_drawn = 0},
     };
 
     if (!state->bullets || !state->enemies || !state->query_points || !state->enemy_qtree)
@@ -312,72 +312,72 @@ void draw_game()
             DrawTextEx(
                 state->custom_font,
                 TextFormat("Fps: %i", GetFPS()),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#level: %i", state->player_level),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#Enemies: %i", state->enemy_count),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#Bullets: %i", state->bullet_count),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("ppos: %f, %f", state->player_pos.x, state->player_pos.y),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("Wave: %d", state->wave_index),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#Enemies on screen: %d", state->temp.num_enemies_drawn),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("Spawn rate: %d", state->num_enemies_per_tick),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#Pickups: %d", state->pickups_count),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("mana: %d", state->mana_count),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("kills: %ld", state->kill_count),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#mana-particles: %d", state->mana_particles_count),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#flame-particles: %d", state->flame_particles_count),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("health: %f", state->player_health),
-                (Vec2){xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2, color);
             ypos += ypadding;
         }
 
@@ -387,7 +387,7 @@ void draw_game()
             DrawTextEx(
                 state->custom_font,
                 TextFormat("%d", GetFPS()),
-                (Vec2){GetScreenWidth() - 30, 4},
+                {GetScreenWidth() - 30, 4},
                 15, 2, ColorAlpha(COLOR_BROWN, 0.5));
         }
     }
@@ -395,17 +395,17 @@ void draw_game()
 
 void draw_player()
 {
-    draw_sprite(&state->sprite_sheet, (Vec2){0, 9}, state->player_pos, DEFAULT_SPRITE_SCALE, 0, WHITE);
+    draw_sprite(&state->sprite_sheet, {0, 9}, state->player_pos, DEFAULT_SPRITE_SCALE, 0, WHITE);
     DrawCircleLinesV(state->player_pos, 80, ColorAlpha(COLOR_BROWN, 0.1));
 
     // :healthbar
     Vec2 size = {16, 1};
     DrawRectangleV(
-        (Vec2){state->player_pos.x - size.x / 2, state->player_pos.y + 10},
+        {state->player_pos.x - size.x / 2, state->player_pos.y + 10},
         size, COLOR_BROWN);
     DrawRectangleV(
-        (Vec2){state->player_pos.x - size.x / 2, state->player_pos.y + 10},
-        (Vec2){size.x * (state->player_health / MAX_PLAYER_HEALTH), size.y},
+        {state->player_pos.x - size.x / 2, state->player_pos.y + 10},
+        {size.x * (state->player_health / MAX_PLAYER_HEALTH), size.y},
         COLOR_WHITE);
 }
 
@@ -440,7 +440,7 @@ void draw_enemies()
 
             draw_spritev(
                 &state->sprite_sheet,
-                (Vec2){loc.x, loc.y},
+                {loc.x, loc.y},
                 enemy->pos,
                 get_enemy_scale(enemy->type),
                 0,
@@ -462,7 +462,7 @@ void draw_particles()
     {
         draw_sprite(
             &state->sprite_sheet,
-            (Vec2){1, 9},
+            {1, 9},
             state->mana_particles[i],
             0.4, 0, WHITE);
     }
@@ -529,7 +529,7 @@ void draw_decorations()
 {
     for (int i = 0; i < NUM_DECORATIONS; i++)
     {
-        Vec2 sprite_pos = (Vec2){
+        Vec2 sprite_pos = {
             ((state->decorations[i].decoration_idx) % 10) + 1,
             (state->decorations[i].decoration_idx + 1 > 9) ? 1 : 0};
         draw_sprite(
@@ -557,17 +557,17 @@ void draw_pickups()
         float sprite_scale = 0.4;
         if (state->pickups[pt.id].type == MANA_SHINY)
         {
-            sprite_pos = (Vec2){2, 9};
+            sprite_pos = {2, 9};
         }
         if (state->pickups[pt.id].type == HEALTH)
         {
-            sprite_pos = (Vec2){5, 9};
+            sprite_pos = {5, 9};
             sprite_scale = 0.5;
         }
 
         draw_sprite(
             &state->sprite_sheet, sprite_pos,
-            (Vec2){pt.x, pt.y}, sprite_scale, 0, WHITE);
+            {pt.x, pt.y}, sprite_scale, 0, WHITE);
     }
 }
 
@@ -606,8 +606,8 @@ void draw_toasts()
 
 void draw_health_bar(Vec2 pos, float health, float max_health)
 {
-    DrawRectangleV((Vec2){pos.x - 8, pos.y + 8}, (Vec2){10, 2}, COLOR_BROWN);
-    DrawRectangleV((Vec2){pos.x - 8, pos.y + 8}, (Vec2){10 * (health / max_health), 2}, COLOR_WHITE);
+    DrawRectangleV({pos.x - 8, pos.y + 8}, {10, 2}, COLOR_BROWN);
+    DrawRectangleV({pos.x - 8, pos.y + 8}, {10 * (health / max_health), 2}, COLOR_WHITE);
 }
 
 void reset_main_menu_enemies()
@@ -616,7 +616,7 @@ void reset_main_menu_enemies()
     for (int i = 0; i < MAX_MAIN_MENU_ENEMIES; i++)
     {
         state->main_menu_enemies[i] = (Enemy){
-            .pos = (Vec2){
+            .pos = {
                 .x = GetRandomValue(0, SCREEN_WIDTH),
                 .y = GetRandomValue(0, SCREEN_HEIGHT)},
             .health = 1,
@@ -663,7 +663,7 @@ void update_main_menu_enemies()
         Vec2 loc = get_enemy_sprite_pos(enemy->type, false);
         draw_spritev(
             &state->sprite_sheet,
-            (Vec2){loc.x, loc.y},
+            {loc.x, loc.y},
             enemy->pos,
             get_enemy_scale(enemy->type) * 2.5,
             0,
@@ -692,7 +692,7 @@ void draw_main_menu()
         DrawTextEx(
             state->custom_font,
             TextFormat("%s", VERSION),
-            (Vec2){20, wh - 35}, 20, 2, WHITE);
+            {20, wh - 35}, 20, 2, WHITE);
     }
 
     // title
@@ -701,7 +701,7 @@ void draw_main_menu()
             const char *title = "Blob";
             int font_size = 80;
             Vec2 title_size = MeasureTextEx(state->custom_font, title, font_size, 2);
-            Vec2 title_pos = (Vec2){
+            Vec2 title_pos = {
                 ww / 2 - title_size.x / 2,
                 wh * 0.2 + sinf(time * speed) * amplitude};
 
@@ -720,7 +720,7 @@ void draw_main_menu()
             const char *title = "Survival";
             int font_size = 80;
             Vec2 title_size = MeasureTextEx(state->custom_font, title, font_size, 2);
-            Vec2 title_pos = (Vec2){
+            Vec2 title_pos = {
                 ww / 2 - title_size.x / 2,
                 (wh * 0.2 + 80) + sinf(time * speed) * amplitude};
             DrawTextEx(
@@ -741,8 +741,8 @@ void draw_main_menu()
     // play btn
     {
         const char *text = "Play";
-        Vec2 btn_size = (Vec2){250, 70};
-        Vec2 pos = (Vec2){ww / 2 - btn_size.x / 2, y_start};
+        Vec2 btn_size = {250, 70};
+        Vec2 pos = {ww / 2 - btn_size.x / 2, y_start};
         bool is_play = main_menu_button((Button){
             .label = text,
             .pos = pos,
@@ -778,8 +778,8 @@ void draw_ui()
 
             // bg
             DrawRectangleV(
-                (Vec2){0, 0},
-                (Vec2){ww, wh},
+                {0, 0},
+                {ww, wh},
                 ColorAlpha(COLOR_DARK_BLUE, 0.7));
 
             // Title
@@ -806,8 +806,8 @@ void draw_ui()
                 const char *text = "Back";
                 float y_start = wh * 0.8;
                 int font_size = 35;
-                Vec2 btn_size = (Vec2){250, 70};
-                Vec2 pos = (Vec2){ww / 2 - btn_size.x / 2, y_start};
+                Vec2 btn_size = {250, 70};
+                Vec2 pos = {ww / 2 - btn_size.x / 2, y_start};
                 bool is_back = upgrade_menu_button((Button){
                     .label = text,
                     .pos = pos,
@@ -837,17 +837,17 @@ void draw_ui()
                 int max_current_level_mana = get_level_mana_threshold(state->player_level);
                 int ww = GetScreenWidth();
                 float percentage_mana = (float)state->mana_count / max_current_level_mana;
-                DrawRectangleV(Vector2Zero(), (Vec2){percentage_mana * ww, 10}, COLOR_LIGHT_PINK);
+                DrawRectangleV(Vector2Zero(), {percentage_mana * ww, 10}, COLOR_LIGHT_PINK);
             }
 
             // Kill count
             {
                 int font_size = 25;
                 const char *text = TextFormat("%ld", state->kill_count);
-                draw_sprite(&state->sprite_sheet, (Vec2){0, 10}, (Vec2){20, 40}, 5, 0, WHITE);
+                draw_sprite(&state->sprite_sheet, {0, 10}, {20, 40}, 5, 0, WHITE);
                 DrawTextEx(
                     state->custom_font, text,
-                    (Vec2){50, 40 - 7}, font_size, 2, COLOR_WHITE);
+                    {50, 40 - 7}, font_size, 2, COLOR_WHITE);
             }
 
             // Timer
@@ -862,29 +862,28 @@ void draw_ui()
                 int font_size = 35;
                 const char *text = TextFormat("%d:%02d", minutes, seconds);
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = (Vec2){(ww / 2) - (text_size.x / 2), 30};
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), 30};
 
                 draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_RED);
             }
 
             // Pause button
             {
-                Vec2 pos = (Vec2){ww - 40, 40};
+                Vec2 pos = {ww - 40, 40};
                 float scale = 2.0f;
                 float sprite_size = TILE_SIZE * scale;
                 draw_sprite(
                     &state->sprite_sheet,
-                    (Vec2){6, 10}, Vector2AddValue(pos, 1.5),
+                    {6, 10}, Vector2AddValue(pos, 1.5),
                     DEFAULT_SPRITE_SCALE * scale, 0, WHITE);
                 draw_sprite(
                     &state->sprite_sheet,
-                    (Vec2){5, 10}, pos,
+                    {5, 10}, pos,
                     DEFAULT_SPRITE_SCALE * scale, 0, WHITE);
 
                 bool is_mouse_hovered = CheckCollisionPointRec(
-                    GetMousePosition(), (Rect){
-                                            pos.x - sprite_size / 2, pos.y - sprite_size / 2,
-                                            sprite_size, sprite_size});
+                    GetMousePosition(), {pos.x - sprite_size / 2, pos.y - sprite_size / 2,
+                                         sprite_size, sprite_size});
                 if (is_mouse_hovered && IsMouseButtonPressed(0))
                 {
                     pause_timers();
@@ -902,8 +901,8 @@ void draw_ui()
         {
             // bg
             DrawRectangleV(
-                (Vec2){0, 0},
-                (Vec2){ww, wh},
+                {0, 0},
+                {ww, wh},
                 ColorAlpha(COLOR_DARK_BLUE, 0.7));
 
             // text
@@ -912,13 +911,13 @@ void draw_ui()
             {
                 const char *text = "You Died";
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = (Vec2){(ww / 2) - (text_size.x / 2), wh * 0.1};
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.1};
                 draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_RED);
             }
             {
                 const char *text = "You survived for";
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = (Vec2){(ww / 2) - (text_size.x / 2), wh * 0.3};
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.3};
                 draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_CEMENT);
             }
             {
@@ -927,13 +926,13 @@ void draw_ui()
                 int seconds = (elapsed / 1000) % 60;
                 const char *text = TextFormat("%d minutes and %d seconds", minutes, seconds);
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = (Vec2){(ww / 2) - (text_size.x / 2), wh * 0.35};
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.35};
                 draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_CEMENT);
             }
             {
                 const char *text = TextFormat("You Killed %d enemies", state->kill_count);
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = (Vec2){(ww / 2) - (text_size.x / 2), wh * 0.5};
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.5};
                 draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_CEMENT);
             }
 
@@ -941,8 +940,8 @@ void draw_ui()
             {
                 const char *text = "Retry";
                 float y_start = wh * 0.8;
-                Vec2 btn_size = (Vec2){250, 70};
-                Vec2 pos = (Vec2){ww / 2 - btn_size.x / 2, y_start};
+                Vec2 btn_size = {250, 70};
+                Vec2 pos = {ww / 2 - btn_size.x / 2, y_start};
                 bool is_play = upgrade_menu_button((Button){
                     .label = text,
                     .pos = pos,
@@ -1017,8 +1016,8 @@ void draw_upgrade_menu()
     // options
     {
         // size values are repeated in the draw func
-        Vec2 size = (Vec2){400, 50};
-        Vec2 pos = (Vec2){
+        Vec2 size = {400, 50};
+        Vec2 pos = {
             ww / 2 - size.x / 2,
             wh * 0.3};
 
@@ -1039,7 +1038,7 @@ void draw_upgrade_option(UpgradeType type, int level, Vec2 *pos)
     // This is a draw func but it also updates the stats and levels of the upgrades
 
     int font_size = 30;
-    Vec2 size = (Vec2){400, 60};
+    Vec2 size = {400, 60};
     float gap = 80.0f;
 
     char *label = "Err";
@@ -1110,9 +1109,9 @@ void draw_spritev(Texture2D *sprite_sheet, Vec2 tile, Vec2 pos, float scale, flo
 
     DrawTexturePro(
         *sprite_sheet,
-        (Rect){tile.x * TILE_SIZE, tile.y * TILE_SIZE, width, TILE_SIZE},
-        (Rect){pos.x, pos.y, TILE_SIZE * scale, TILE_SIZE * scale},
-        (Vec2){(TILE_SIZE / 2.0f) * scale, (TILE_SIZE / 2.0f) * scale},
+        {tile.x * TILE_SIZE, tile.y * TILE_SIZE, width, TILE_SIZE},
+        {pos.x, pos.y, TILE_SIZE * scale, TILE_SIZE * scale},
+        {(TILE_SIZE / 2.0f) * scale, (TILE_SIZE / 2.0f) * scale},
         rotation,
         tint);
 }
@@ -1172,7 +1171,7 @@ void update_game()
 void update_player()
 {
     // Camera follow
-    state->camera.target = (Vec2){state->player_pos.x, state->player_pos.y};
+    state->camera.target = {state->player_pos.x, state->player_pos.y};
 
     // Player hurt
     // :hurt
@@ -1293,7 +1292,7 @@ void update_enemies()
                     if (state->pickups_count < MAX_PICKUPS)
                     {
                         state->pickups[state->pickups_count] = (Pickup){
-                            .pos = (Vec2){enemies[i].pos.x, enemies[i].pos.y},
+                            .pos = {enemies[i].pos.x, enemies[i].pos.y},
                             .type = get_pickup_spawn_type(enemies[i].is_shiny),
                             .spawn_ts = get_current_time_millis(),
                             .is_collected = false};
@@ -1716,13 +1715,13 @@ void update_enemies()
                         for (int j = 0; j < num_pups_to_spawn; j++)
                         {
                             float angle = (2.0f * PI / num_pups_to_spawn) * j;
-                            Vector2 spawn_offset = (Vec2){
+                            Vector2 spawn_offset = {
                                 .x = cosf(angle) * spawn_distance,
                                 .y = sinf(angle) * spawn_distance};
 
                             // Spawn the pup
                             enemies[*enemy_count] = (Enemy){
-                                .pos = (Vec2){
+                                .pos = {
                                     .x = enemies[i].pos.x + spawn_offset.x,
                                     .y = enemies[i].pos.y + spawn_offset.y},
                                 .health = get_enemy_health(DEMON_PUP, false),
@@ -2235,7 +2234,7 @@ void update_pickups()
         for (int j = 0; j < state->num_query_points; j++)
         {
             QPoint pt = state->query_points[j];
-            float dist = Vector2DistanceSqr(state->player_pos, (Vec2){pt.x, pt.y});
+            float dist = Vector2DistanceSqr(state->player_pos, {pt.x, pt.y});
             PickupType pickup_type = state->pickups[pt.id].type;
             if (dist > perception_radius * perception_radius)
             {
@@ -2259,7 +2258,7 @@ void update_pickups()
                 float perception_range = perception_radius * perception_radius;
                 if (state->mana_particles_count < MAX_MANA_PARTICLES && dist <= perception_range)
                 {
-                    state->mana_particles[state->mana_particles_count] = (Vec2){pt.x, pt.y};
+                    state->mana_particles[state->mana_particles_count] = {pt.x, pt.y};
                     state->mana_particles_count += 1;
                 }
 
@@ -2413,7 +2412,7 @@ void decorations_init()
     {
         int rand_decoration = GetRandomValue(0, TOTAL_NUM_DECORATIONS);
         state->decorations[i] = (Decoration){
-            .pos = (Vec2){
+            .pos = {
                 GetRandomValue(0, state->world_dims.width),
                 GetRandomValue(0, state->world_dims.height)},
             .decoration_idx = rand_decoration};
@@ -2423,7 +2422,7 @@ void decorations_init()
     {
         int rand_decoration = GetRandomValue(0, TOTAL_NUM_DECORATIONS);
         state->decorations[i] = (Decoration){
-            .pos = (Vec2){
+            .pos = {
                 GetRandomValue(0, state->world_dims.width),
                 GetRandomValue(0, state->world_dims.height)},
             .decoration_idx = rand_decoration};
@@ -2589,7 +2588,7 @@ void handle_window_resize()
         scaled_height = (int)(scaled_width / target_aspect);
     }
 
-    state->dest_rect = (Rect){
+    state->dest_rect = {
         (ww - scaled_width) / 2,
         (wh - scaled_height) / 2,
         scaled_width, scaled_height};
@@ -2850,19 +2849,19 @@ Vec2 get_enemy_sprite_pos(EnemyType type, bool is_shiny)
     switch (type)
     {
     case BAT:
-        return is_shiny ? (Vec2){0, 4} : (Vec2){0, 3};
+        return is_shiny ? {0, 4} : {0, 3};
     case RAM:
-        return (Vec2){1, 3};
+        return {1, 3};
     case MAGE:
-        return (Vec2){2, 3};
+        return {2, 3};
     case DEMON:
-        return (Vec2){4, 3};
+        return {4, 3};
     case DEMON_PUP:
-        return (Vec2){5, 3};
+        return {5, 3};
     case REAPER:
-        return (Vec2){3, 3};
+        return {3, 3};
     default:
-        return (Vec2){0, 0};
+        return {0, 0};
     }
 }
 
@@ -2951,22 +2950,22 @@ Vec2 get_attack_sprite(AttackType type)
     switch (type)
     {
     case BULLET:
-        return (Vec2){0, 6};
+        return {0, 6};
     case MAGE_BULLET:
-        return (Vec2){4, 6};
+        return {4, 6};
     case DEMON_BULLET:
-        return (Vec2){4, 6};
+        return {4, 6};
     case SPLINTER:
-        return (Vec2){1, 6};
+        return {1, 6};
     case SPIKE:
-        return (Vec2){2, 6};
+        return {2, 6};
     case FLAME:
     case FROST_WAVE:
-        return (Vec2){3, 6};
+        return {3, 6};
     case ORBS:
-        return (Vec2){6, 6};
+        return {6, 6};
     default:
-        return (Vec2){0, 0};
+        return {0, 0};
     }
 }
 
@@ -3473,11 +3472,11 @@ bool main_menu_button(Button btn)
     Vec2 text_pos = {btn.pos.x + (btn.size.x - text_size.x) / 2, btn.pos.y + (btn.size.y - text_size.y) / 2};
 
     bool is_mouse_hovered = CheckCollisionPointRec(
-        GetMousePosition(), (Rect){btn.pos.x, btn.pos.y, btn.size.x, btn.size.y});
+        GetMousePosition(), {btn.pos.x, btn.pos.y, btn.size.x, btn.size.y});
     DrawTextureNPatch(
         state->sprite_sheet,
         patch_info,
-        (Rect){btn.pos.x, btn.pos.y, btn.size.x, btn.size.y},
+        {btn.pos.x, btn.pos.y, btn.size.x, btn.size.y},
         Vector2Zero(), 0.0f, COLOR_WHITE);
     draw_text_with_shadow(btn.label, text_pos, btn.font_size, COLOR_WHITE, COLOR_CEMENT);
 
@@ -3503,7 +3502,7 @@ bool upgrade_menu_button(Button btn)
     DrawTextureNPatch(
         state->sprite_sheet,
         patch_info,
-        (Rect){btn.pos.x, btn.pos.y, btn.size.x, btn.size.y},
+        {btn.pos.x, btn.pos.y, btn.size.x, btn.size.y},
         Vector2Zero(), 0.0f, COLOR_WHITE);
 
     Vec2 text_size = MeasureTextEx(state->custom_font, btn.label, btn.font_size, 2);
@@ -3511,7 +3510,7 @@ bool upgrade_menu_button(Button btn)
     DrawTextEx(state->custom_font, btn.label, text_pos, btn.font_size, 2, btn.fg);
 
     bool is_mouse_hovered = CheckCollisionPointRec(
-        GetMousePosition(), (Rect){btn.pos.x, btn.pos.y, btn.size.x, btn.size.y});
+        GetMousePosition(), {btn.pos.x, btn.pos.y, btn.size.x, btn.size.y});
     return is_mouse_hovered && IsMouseButtonPressed(0);
 }
 
@@ -3524,7 +3523,7 @@ bool button(Button btn)
     Vec2 size_offset = Vector2AddValue(btn.size, 6);
 
     bool is_mouse_hovered = CheckCollisionPointRec(
-        GetMousePosition(), (Rect){btn.pos.x, btn.pos.y, btn.size.x, btn.size.y});
+        GetMousePosition(), {btn.pos.x, btn.pos.y, btn.size.x, btn.size.y});
 
     DrawRectangleV(
         is_mouse_hovered ? pos_offset_rev : pos_offset,
@@ -3574,11 +3573,11 @@ void slider(float ypos, const char *label, float *slider_offset, bool *is_drag)
     DrawTextEx(
         state->custom_font,
         TextFormat("%d%%", (int)(*slider_offset * 100)),
-        (Vec2){text_pos.x, text_pos.y + 40},
+        {text_pos.x, text_pos.y + 40},
         font_size, 2, COLOR_WHITE);
     DrawRectangleV(pos, slider_size, COLOR_BROWN);
     DrawRectangleV(
-        (Vec2){pos.x + (*slider_offset * max_offset_val), handle_pos.y},
+        {pos.x + (*slider_offset * max_offset_val), handle_pos.y},
         handle_size, COLOR_WHITE);
 }
 
@@ -3638,21 +3637,21 @@ Vec2 rotate_vector(Vec2 v, float angle)
     float angle_rad = angle * DEG2RAD;
     float cosa = cosf(angle_rad);
     float sina = sinf(angle_rad);
-    return (Vec2){
+    return {
         v.x * cosa - v.y * sina,
         v.x * sina + v.y * cosa};
 }
 
 Vec2 get_line_center(Vec2 a, Vec2 b)
 {
-    return (Vec2){
+    return {
         (a.x + b.x) / 2,
         (a.y + b.y) / 2};
 }
 
 Vec2 get_rand_unit_vec2()
 {
-    Vec2 rand_vec = (Vec2){GetRandomValue(-100, 100), GetRandomValue(-100, 100)};
+    Vec2 rand_vec = {GetRandomValue(-100, 100), GetRandomValue(-100, 100)};
     return Vector2Normalize(rand_vec);
 }
 
@@ -3681,14 +3680,14 @@ Vec2 get_rand_pos_around_point(Vec2 pt, float min_dist, float max_dist)
     float angle = GetRandomValue(0, 360) * (PI / 180.0f);
     float distance = min_dist + (float)GetRandomValue(0, 100) / 100.0f * (max_dist - min_dist);
 
-    return (Vec2){
+    return {
         pt.x + distance * cosf(angle),
         pt.y + distance * sinf(angle)};
 }
 
 Vec2 point_at_dist(Vec2 pt, Vec2 dir, float dist)
 {
-    return (Vec2){pt.x + dir.x * dist, pt.y + dir.y * dist};
+    return {pt.x + dir.x * dist, pt.y + dir.y * dist};
 }
 
 bool is_point_in_triangle(Vec2 pt, Vec2 a, Vec2 b, Vec2 c)
