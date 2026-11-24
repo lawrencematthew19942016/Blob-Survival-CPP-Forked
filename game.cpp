@@ -1,22 +1,22 @@
 #include "mainheaderfile.h"
 
-// global state
-// most funcs assume state pointer is valid when accessed
-// init properly before use
+using Vec2 = Vector2;
 GameState *state = NULL;
 
 // MARK: :init :malloc
 
 void gamestate_create()
 {
-    state = malloc(sizeof(GameState));
+
+    // convert to CPP static cast
+    state = static_cast<GameState *>(malloc(sizeof(GameState)));
     if (!state)
     {
         printe("Error malloc game state");
         return;
     }
 
-    Vec2 world_center = (Vec2){
+    Vector2 world_center = {
         (WORLD_W * TILE_SIZE * DEFAULT_SPRITE_SCALE) / 2.0f,
         (WORLD_H * TILE_SIZE * DEFAULT_SPRITE_SCALE) / 2.0f};
 
@@ -25,15 +25,15 @@ void gamestate_create()
 
     *state = (GameState){
         .camera = {
-            .target = (Vec2){VIRT_WIDTH / 2.0f, VIRT_HEIGHT / 2.0f},
-            .offset = (Vec2){VIRT_WIDTH / 2.0f, VIRT_HEIGHT / 2.0f},
+            .target = {VIRT_WIDTH / 2.0f, VIRT_HEIGHT / 2.0f},
+            .offset = {VIRT_WIDTH / 2.0f, VIRT_HEIGHT / 2.0f},
             .rotation = 0.0f,
             .zoom = 1.0f},
         .sprite_sheet = LoadTexture(SPRITE_SHEET_PATH),
         .custom_font = LoadFontEx(CUSTOM_FONT_PATH, 64 * 2, 0, 250),
         .render_texture = LoadRenderTexture(VIRT_WIDTH, VIRT_HEIGHT),
-        .source_rect = (Rect){0.0f, 0.0f, (float)VIRT_WIDTH, -(float)VIRT_HEIGHT},
-        .dest_rect = (Rect){-virtual_ratio, -virtual_ratio, SCREEN_WIDTH + (virtual_ratio * 2), SCREEN_HEIGHT + (virtual_ratio * 2)},
+        .source_rect = {0.0f, 0.0f, (float)VIRT_WIDTH, -(float)VIRT_HEIGHT},
+        .dest_rect = {-virtual_ratio, -virtual_ratio, SCREEN_WIDTH + (virtual_ratio * 2), SCREEN_HEIGHT + (virtual_ratio * 2)},
 
         // Sound
         .sound_intensity = 1.0,
@@ -487,7 +487,6 @@ void draw_particles()
             0.6, 0, COLOR_FLASH_FROST);
     }
 }
-
 
 // TODO: MOVE all DRAW() functions to it's own file
 void draw_bullets()
