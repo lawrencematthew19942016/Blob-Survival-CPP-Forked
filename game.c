@@ -1,14 +1,5 @@
 #include "mainheaderfile.h"
 
-#ifdef WASM
-#include <emscripten/fetch.h>
-#else
-//? Multithreading unix-like OS aka Linux
-// #include <pthread.h>
-//? For network requests
-// #include <curl/curl.h>
-#endif
-
 // global state
 // most funcs assume state pointer is valid when accessed
 // init properly before use
@@ -497,6 +488,8 @@ void draw_particles()
     }
 }
 
+
+// TODO: MOVE all DRAW() functions to it's own file
 void draw_bullets()
 {
     // Player bullets
@@ -3730,98 +3723,6 @@ void printe(const char *text)
     TraceLog(LOG_ERROR, text);
 }
 
-// MARK: :ana
-
-// void* post_analytics_thread(void* arg) {
-//     AnalyticsType type = *(AnalyticsType*)arg;
-//     free(arg);
-
-//     char url[256] = SERVER_URL;
-//     switch (type) {
-//         case GAME_OPEN:
-//             sprintf(url, "%s/game-open", SERVER_URL);
-//             break;
-//         case GAME_START:
-//             sprintf(url, "%s/game-start", SERVER_URL);
-//             break;
-//         case GAME_OVER:
-//             sprintf(url, "%s/game-over", SERVER_URL);
-//             break;
-//     }
-
-//     if (DEBUG) {
-//         sprintf(url, "%s/debug", url);
-//     } else if (IS_MOBILE) {
-//         sprintf(url, "%s/mobile", url);
-//     }
-
-//     #ifndef WASM
-//     {
-//         CURL *curl = curl_easy_init();
-//         if (!curl) {
-//             printe("Curl init failed");
-//             return NULL;
-//         }
-//         curl_easy_setopt(curl, CURLOPT_URL, url);
-//         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
-//         CURLcode res = curl_easy_perform(curl);
-//         if (res != CURLE_OK) {
-//             printe(TextFormat("curl failed: %s\n", curl_easy_strerror(res)));
-//         }
-//         curl_easy_cleanup(curl);
-//     }
-//     #else
-//     {
-//         // WASM API GET request using emscripten_fetch
-//         emscripten_fetch_attr_t attr;
-//         emscripten_fetch_attr_init(&attr);
-//         strcpy(attr.requestMethod, "GET");
-//         // no success/failure callbacks
-//         // emscripten will automatically clean up the fetch resources
-//         attr.onsuccess = NULL;
-//         attr.onerror = NULL;
-//         attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-//         emscripten_fetch(&attr, url);
-//     }
-//     #endif
-
-//     return NULL;
-// }
-
-// void post_analytics_async(AnalyticsType type) {
-//     #ifndef WASM
-//     {
-//         pthread_t thread;
-//         AnalyticsType* data = malloc(sizeof(AnalyticsType));
-//         if (!data) {
-//             printe("malloc for thread failed");
-//             return;
-//         }
-//         *data = type;
-
-//         if (pthread_create(&thread, NULL, post_analytics_thread, data) != 0) {
-//             printe("failed to create thread");
-//             free(data);
-//         } else {
-//             // automatically cleans up resources when thread exits
-//             pthread_detach(thread);
-//         }
-//     }
-//     #else
-//     {
-//         AnalyticsType* data = malloc(sizeof(AnalyticsType));
-//         if (!data) {
-//             printe("malloc for thread failed");
-//             return;
-//         }
-//         *data = type;
-//         post_analytics_thread(data);
-//     }
-//     #endif
-// }
-
-// MARK: :main
-
 void game_update()
 {
     BeginDrawing();
@@ -3844,7 +3745,6 @@ void game_update()
     EndDrawing();
 }
 
-#ifndef WASM
 int main(void)
 {
     // Init Window
@@ -3874,4 +3774,3 @@ int main(void)
     CloseWindow();
     return 0;
 }
-#endif

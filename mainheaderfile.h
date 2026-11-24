@@ -1,4 +1,5 @@
 // stores all header files in one to tidy up game.c
+#pragma once
 #include "raylib.h"
 #include "raymath.h"
 #include "game.h"
