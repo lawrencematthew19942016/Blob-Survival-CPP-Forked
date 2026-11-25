@@ -131,8 +131,10 @@ void gamestate_create()
         .touch_down_pos = Vector2Zero(),
         .joystick_direction = Vector2Zero(),
         .mana_count = 0,
-        .mana_particles = (Vec2 *)malloc(MAX_MANA_PARTICLES * sizeof),
+        // .mana_particles = (Vec2 *)malloc(MAX_MANA_PARTICLES * sizeof),
+        .mana_particles = static_cast<Vec2 *>(malloc(MAX_MANA_PARTICLES * sizeof(Vec2))),
         .mana_particles_count = 0,
+        // .query_points = static_cast<QPoint *>(malloc(MAX_ENEMIES * sizeof(QPoint))),
 
         // Weapon
         .bullets = (Bullet *)malloc(MAX_BULLETS * sizeof(Bullet)),
@@ -275,7 +277,7 @@ void draw_game()
     // game draw
     BeginTextureMode(state->render_texture);
     {
-        ClearBackground(COLOR_DARK_BLUE);
+        ClearBackground({16, 20, 31, 255});
         BeginMode2D(state->camera);
         {
             draw_decorations();
@@ -388,7 +390,7 @@ void draw_game()
                 state->custom_font,
                 TextFormat("%d", GetFPS()),
                 {GetScreenWidth() - 30, 4},
-                15, 2, ColorAlpha(COLOR_BROWN, 0.5));
+                15, 2, ColorAlpha({123, 105, 96, 255}, 0.5));
         }
     }
 }
@@ -396,17 +398,17 @@ void draw_game()
 void draw_player()
 {
     draw_sprite(&state->sprite_sheet, {0, 9}, state->player_pos, DEFAULT_SPRITE_SCALE, 0, WHITE);
-    DrawCircleLinesV(state->player_pos, 80, ColorAlpha(COLOR_BROWN, 0.1));
+    DrawCircleLinesV(state->player_pos, 80, ColorAlpha({123, 105, 96, 255}, 0.1));
 
     // :healthbar
     Vec2 size = {16, 1};
     DrawRectangleV(
         {state->player_pos.x - size.x / 2, state->player_pos.y + 10},
-        size, COLOR_BROWN);
+        size, {123, 105, 96, 255});
     DrawRectangleV(
         {state->player_pos.x - size.x / 2, state->player_pos.y + 10},
         {size.x * (state->player_health / MAX_PLAYER_HEALTH), size.y},
-        COLOR_WHITE);
+        {255, 248, 237, 255});
 }
 
 void draw_enemies()
@@ -474,7 +476,7 @@ void draw_particles()
             &state->sprite_sheet,
             get_attack_sprite(FLAME),
             state->flame_particles[i].pos,
-            0.6, 0, COLOR_RED);
+            0.6, 0, {255, 41, 97, 255});
     }
 
     // Frost wave
@@ -521,7 +523,7 @@ void draw_bullets()
             &state->sprite_sheet,
             get_attack_sprite(state->enemy_bullets[i].type),
             state->enemy_bullets[i].pos,
-            0.8, 0, COLOR_RED);
+            0.8, 0, {255, 41, 97, 255});
     }
 }
 
@@ -595,7 +597,7 @@ void draw_toasts()
         DrawRectangleV(
             pos_offset,
             Vector2AddValue(size, padding * 2),
-            ColorAlpha(COLOR_BROWN, 0.3));
+            ColorAlpha({123, 105, 96, 255}, 0.3));
         DrawTextEx(
             state->custom_font,
             t.message,
@@ -606,8 +608,8 @@ void draw_toasts()
 
 void draw_health_bar(Vec2 pos, float health, float max_health)
 {
-    DrawRectangleV({pos.x - 8, pos.y + 8}, {10, 2}, COLOR_BROWN);
-    DrawRectangleV({pos.x - 8, pos.y + 8}, {10 * (health / max_health), 2}, COLOR_WHITE);
+    DrawRectangleV({pos.x - 8, pos.y + 8}, {10, 2}, {123, 105, 96, 255});
+    DrawRectangleV({pos.x - 8, pos.y + 8}, {10 * (health / max_health), 2}, {255, 248, 237, 255});
 }
 
 void reset_main_menu_enemies()
@@ -679,7 +681,7 @@ void draw_main_menu()
 {
     if (state->screen != MAIN_MENU)
         return;
-    ClearBackground(COLOR_DARK_BLUE);
+    ClearBackground({16, 20, 31, 255});
 
     float ww = (float)GetScreenWidth();
     float wh = (float)GetScreenHeight();
@@ -709,12 +711,12 @@ void draw_main_menu()
                 state->custom_font,
                 title,
                 Vector2AddValue(title_pos, 4),
-                font_size, 3, COLOR_RED);
+                font_size, 3, {255, 41, 97, 255});
             DrawTextEx(
                 state->custom_font,
                 title,
                 title_pos,
-                font_size, 3, COLOR_WHITE);
+                font_size, 3, {255, 248, 237, 255});
         }
         {
             const char *title = "Survival";
@@ -727,12 +729,12 @@ void draw_main_menu()
                 state->custom_font,
                 title,
                 Vector2AddValue(title_pos, 4),
-                font_size, 3, COLOR_RED);
+                font_size, 3, {255, 41, 97, 255});
             DrawTextEx(
                 state->custom_font,
                 title,
                 title_pos,
-                font_size, 3, COLOR_WHITE);
+                font_size, 3, {255, 248, 237, 255});
         }
     }
 
@@ -747,9 +749,9 @@ void draw_main_menu()
             .label = text,
             .pos = pos,
             .size = btn_size,
-            .bg = COLOR_BROWN,
-            .fg = COLOR_WHITE,
-            .shadow = COLOR_CEMENT,
+            .bg = {123, 105, 96, 255},
+            .fg = {255, 248, 237, 255},
+            .shadow = {53, 52, 65, 255},
             .font_size = font_size});
         y_start += 100;
 
@@ -780,7 +782,7 @@ void draw_ui()
             DrawRectangleV(
                 {0, 0},
                 {ww, wh},
-                ColorAlpha(COLOR_DARK_BLUE, 0.7));
+                ColorAlpha({16, 20, 31, 255}, 0.7));
 
             // Title
             {
@@ -788,7 +790,7 @@ void draw_ui()
                 int font_size = 35;
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
                 Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.1};
-                draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_RED);
+                draw_text_with_shadow(text, pos, font_size, {255, 248, 237, 255}, {255, 41, 97, 255});
             }
 
             // Volume controls
@@ -812,9 +814,9 @@ void draw_ui()
                     .label = text,
                     .pos = pos,
                     .size = btn_size,
-                    .bg = COLOR_BROWN,
-                    .fg = COLOR_WHITE,
-                    .shadow = COLOR_BROWN,
+                    .bg = {123, 105, 96, 255},
+                    .fg = {255, 248, 237, 255},
+                    .shadow = {123, 105, 96, 255},
                     .font_size = font_size});
 
                 if (is_back || IsKeyPressed(KEY_ESCAPE))
@@ -847,7 +849,7 @@ void draw_ui()
                 draw_sprite(&state->sprite_sheet, {0, 10}, {20, 40}, 5, 0, WHITE);
                 DrawTextEx(
                     state->custom_font, text,
-                    {50, 40 - 7}, font_size, 2, COLOR_WHITE);
+                    {50, 40 - 7}, font_size, 2, {255, 248, 237, 255});
             }
 
             // Timer
@@ -864,7 +866,7 @@ void draw_ui()
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
                 Vec2 pos = {(ww / 2) - (text_size.x / 2), 30};
 
-                draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_RED);
+                draw_text_with_shadow(text, pos, font_size, {255, 248, 237, 255}, {255, 41, 97, 255});
             }
 
             // Pause button
@@ -903,7 +905,7 @@ void draw_ui()
             DrawRectangleV(
                 {0, 0},
                 {ww, wh},
-                ColorAlpha(COLOR_DARK_BLUE, 0.7));
+                ColorAlpha({16, 20, 31, 255}, 0.7));
 
             // text
             int font_size = 35;
@@ -911,14 +913,14 @@ void draw_ui()
             {
                 const char *text = "You Died";
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.1};
-                draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_RED);
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.1f};
+                draw_text_with_shadow(text, pos, font_size, {255, 248, 237, 255}, {255, 41, 97, 255});
             }
             {
                 const char *text = "You survived for";
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.3};
-                draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_CEMENT);
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.3f};
+                draw_text_with_shadow(text, pos, font_size, {255, 248, 237, 255}, {53, 52, 65, 255});
             }
             {
                 int elapsed = state->death_ts - state->timer.game_start_ts;
@@ -926,14 +928,14 @@ void draw_ui()
                 int seconds = (elapsed / 1000) % 60;
                 const char *text = TextFormat("%d minutes and %d seconds", minutes, seconds);
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.35};
-                draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_CEMENT);
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.35f};
+                draw_text_with_shadow(text, pos, font_size, {255, 248, 237, 255}, {53, 52, 65, 255});
             }
             {
                 const char *text = TextFormat("You Killed %d enemies", state->kill_count);
                 Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.5};
-                draw_text_with_shadow(text, pos, font_size, COLOR_WHITE, COLOR_CEMENT);
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.5f};
+                draw_text_with_shadow(text, pos, font_size, {255, 248, 237, 255}, {53, 52, 65, 255});
             }
 
             // btn
@@ -946,9 +948,9 @@ void draw_ui()
                     .label = text,
                     .pos = pos,
                     .size = btn_size,
-                    .bg = COLOR_BROWN,
-                    .fg = COLOR_WHITE,
-                    .shadow = COLOR_BROWN,
+                    .bg = {123, 105, 96, 255},
+                    .fg = {255, 248, 237, 255},
+                    .shadow = {123, 105, 96, 255},
                     .font_size = font_size});
 
                 // :retry :restart
@@ -967,12 +969,12 @@ void draw_ui()
     {
         if (state->is_joystick_enabled)
         {
-            DrawCircleV(state->touch_down_pos, 30, ColorAlpha(COLOR_BROWN, 0.5));
+            DrawCircleV(state->touch_down_pos, 30, ColorAlpha({123, 105, 96, 255}, 0.5));
             DrawCircleV(
                 Vector2Add(
                     Vector2Scale(state->joystick_direction, 15),
                     state->touch_down_pos),
-                10, ColorAlpha(COLOR_WHITE, 0.5));
+                10, ColorAlpha({255, 248, 237, 255}, 0.5));
         }
     }
 }
@@ -997,7 +999,7 @@ void draw_upgrade_menu()
         upgrade_stat(rand_type);
         state->screen = IN_GAME;
         resume_timers();
-        play_sound_modulated(&state->sound_upgrade, 0.3);
+        play_sound_modulated(&state->sound_upgrade, 0.3f);
         return;
     }
 
@@ -1009,8 +1011,8 @@ void draw_upgrade_menu()
         Vec2 pos = {(GetScreenWidth() / 2) - (text_size.x / 2), wh * 0.15};
         Vec2 pos_offset = Vector2AddValue(pos, 2);
 
-        DrawTextEx(state->custom_font, text, pos_offset, font_size, 2, COLOR_RED);
-        DrawTextEx(state->custom_font, text, pos, font_size, 2, COLOR_WHITE);
+        DrawTextEx(state->custom_font, text, pos_offset, font_size, 2, {255, 41, 97, 255});
+        DrawTextEx(state->custom_font, text, pos, font_size, 2, {255, 248, 237, 255});
     }
 
     // options
@@ -1077,9 +1079,9 @@ void draw_upgrade_option(UpgradeType type, int level, Vec2 *pos)
             .label = label,
             .pos = *pos,
             .size = size,
-            .bg = COLOR_BROWN,
-            .fg = COLOR_WHITE,
-            .shadow = COLOR_BROWN,
+            .bg = {123, 105, 96, 255},
+            .fg = {255, 248, 237, 255},
+            .shadow = {123, 105, 96, 255},
             .font_size = font_size});
         pos->y += gap;
     }
@@ -1179,10 +1181,9 @@ void update_player()
         state->num_query_points = 0;
         qtree_query(
             state->enemy_qtree,
-            (QRect){
-                state->player_pos.x,
-                state->player_pos.y,
-                10, 10},
+            {state->player_pos.x,
+             state->player_pos.y,
+             10, 10},
             state->query_points,
             &state->num_query_points);
         for (int i = 0; i < state->num_query_points; i++)
@@ -1340,10 +1341,9 @@ void update_enemies()
         state->num_query_points = 0;
         qtree_query(
             state->enemy_qtree,
-            (QRect){
-                bullets[i].pos.x - 2.5f,
-                bullets[i].pos.y - 2.5f,
-                bullet_size, bullet_size},
+            {bullets[i].pos.x - 2.5f,
+             bullets[i].pos.y - 2.5f,
+             bullet_size, bullet_size},
             state->query_points,
             &state->num_query_points);
 
@@ -1516,11 +1516,10 @@ void update_enemies()
                     state->num_query_points = 0;
                     qtree_query(
                         state->enemy_qtree,
-                        (QRect){
-                            enemies[i].pos.x,
-                            enemies[i].pos.y,
-                            perception_radius * 2,
-                            perception_radius * 2},
+                        {enemies[i].pos.x,
+                         enemies[i].pos.y,
+                         perception_radius * 2,
+                         perception_radius * 2},
                         state->query_points,
                         &state->num_query_points);
 
@@ -1925,7 +1924,7 @@ void update_bullets()
             state->num_query_points = 0;
             qtree_query(
                 state->enemy_qtree,
-                (QRect){player_pos.x, player_pos.y, GUN_VISION, GUN_VISION},
+                {player_pos.x, player_pos.y, GUN_VISION, GUN_VISION},
                 state->query_points,
                 &state->num_query_points);
 
@@ -2223,11 +2222,10 @@ void update_pickups()
         state->num_query_points = 0;
         qtree_query(
             state->pickups_qtree,
-            (QRect){
-                state->player_pos.x,
-                state->player_pos.y,
-                perception_radius,
-                perception_radius},
+            {state->player_pos.x,
+             state->player_pos.y,
+             perception_radius,
+             perception_radius},
             state->query_points,
             &state->num_query_points);
 
@@ -2589,8 +2587,8 @@ void handle_window_resize()
     }
 
     state->dest_rect = {
-        (ww - scaled_width) / 2,
-        (wh - scaled_height) / 2,
+        (ww - scaled_width) / 2.0f,
+        (wh - scaled_height) / 2.0f,
         scaled_width, scaled_height};
 }
 
@@ -2630,11 +2628,18 @@ void handle_virtual_joystick_input()
 
 QTree *qtree_create(QRect boundary)
 {
-    QTree *qtree = malloc(sizeof(QTree));
+
+    //    state = static_cast<GameState *>(malloc(sizeof(GameState)));
+
+    // QTree *qtree = malloc(sizeof(QTree));
+    QTree *qtree = static_cast<QTree *>(malloc(sizeof(QTree)));
+
     if (!qtree)
         return NULL;
 
-    qtree->points = malloc(POINTS_PER_QUAD * sizeof(QPoint));
+    // qtree->points = malloc(POINTS_PER_QUAD * sizeof(QPoint));
+    qtree->points = static_cast<QPoint *>(malloc(POINTS_PER_QUAD * sizeof(QPoint)));
+
     qtree->boundary = boundary;
     qtree->is_divided = false;
     qtree->num_points = 0;
@@ -2693,7 +2698,7 @@ void qtree_reset_boundary(QTree *qtree, QRect rect)
         qtree->tl->boundary.h = h;
         qtree_reset_boundary(
             qtree->tl,
-            (QRect){qtree->tl->boundary.x, qtree->tl->boundary.y, w, h});
+            {qtree->tl->boundary.x, qtree->tl->boundary.y, w, h});
 
         qtree->tr->boundary.x = rect.x + w / 2;
         qtree->tr->boundary.y = rect.y - h / 2;
@@ -2701,7 +2706,7 @@ void qtree_reset_boundary(QTree *qtree, QRect rect)
         qtree->tr->boundary.h = h;
         qtree_reset_boundary(
             qtree->tr,
-            (QRect){qtree->tr->boundary.x, qtree->tr->boundary.y, w, h});
+            {qtree->tr->boundary.x, qtree->tr->boundary.y, w, h});
 
         qtree->bl->boundary.x = rect.x - w / 2;
         qtree->bl->boundary.y = rect.y + h / 2;
@@ -2709,7 +2714,7 @@ void qtree_reset_boundary(QTree *qtree, QRect rect)
         qtree->bl->boundary.h = h;
         qtree_reset_boundary(
             qtree->bl,
-            (QRect){qtree->bl->boundary.x, qtree->bl->boundary.y, w, h});
+            {qtree->bl->boundary.x, qtree->bl->boundary.y, w, h});
 
         qtree->br->boundary.x = rect.x + w / 2;
         qtree->br->boundary.y = rect.y + h / 2;
@@ -2717,7 +2722,7 @@ void qtree_reset_boundary(QTree *qtree, QRect rect)
         qtree->br->boundary.h = h;
         qtree_reset_boundary(
             qtree->br,
-            (QRect){qtree->br->boundary.x, qtree->br->boundary.y, w, h});
+            {qtree->br->boundary.x, qtree->br->boundary.y, w, h});
     }
 }
 
@@ -2819,10 +2824,10 @@ void _qtree_subdivide(QTree *qtree)
     float w = qtree->boundary.w;
     float h = qtree->boundary.h;
 
-    QRect tl = (QRect){x - w / 2, y - h / 2, w / 2, h / 2};
-    QRect tr = (QRect){x + w / 2, y - h / 2, w / 2, h / 2};
-    QRect bl = (QRect){x - w / 2, y + h / 2, w / 2, h / 2};
-    QRect br = (QRect){x + w / 2, y + h / 2, w / 2, h / 2};
+    QRect tl = {x - w / 2, y - h / 2, w / 2, h / 2};
+    QRect tr = {x + w / 2, y - h / 2, w / 2, h / 2};
+    QRect bl = {x - w / 2, y + h / 2, w / 2, h / 2};
+    QRect br = {x + w / 2, y + h / 2, w / 2, h / 2};
 
     qtree->tl = qtree_create(tl);
     qtree->tr = qtree_create(tr);
@@ -3477,8 +3482,8 @@ bool main_menu_button(Button btn)
         state->sprite_sheet,
         patch_info,
         {btn.pos.x, btn.pos.y, btn.size.x, btn.size.y},
-        Vector2Zero(), 0.0f, COLOR_WHITE);
-    draw_text_with_shadow(btn.label, text_pos, btn.font_size, COLOR_WHITE, COLOR_CEMENT);
+        Vector2Zero(), 0.0f, {255, 248, 237, 255});
+    draw_text_with_shadow(btn.label, text_pos, btn.font_size, {255, 248, 237, 255}, {53, 52, 65, 255});
 
     return is_mouse_hovered && IsMouseButtonPressed(0);
 }
@@ -3498,12 +3503,12 @@ bool upgrade_menu_button(Button btn)
     DrawRectangleV(
         Vector2SubtractValue(btn.pos, padding),
         Vector2AddValue(btn.size, padding * 2),
-        COLOR_DARK_BLUE);
+        {16, 20, 31, 255});
     DrawTextureNPatch(
         state->sprite_sheet,
         patch_info,
         {btn.pos.x, btn.pos.y, btn.size.x, btn.size.y},
-        Vector2Zero(), 0.0f, COLOR_WHITE);
+        Vector2Zero(), 0.0f, {255, 248, 237, 255});
 
     Vec2 text_size = MeasureTextEx(state->custom_font, btn.label, btn.font_size, 2);
     Vec2 text_pos = {btn.pos.x + (btn.size.x - text_size.x) / 2, btn.pos.y + (btn.size.y - text_size.y) / 2};
@@ -3528,7 +3533,7 @@ bool button(Button btn)
     DrawRectangleV(
         is_mouse_hovered ? pos_offset_rev : pos_offset,
         is_mouse_hovered ? size_offset : btn.size,
-        is_mouse_hovered ? COLOR_WHITE : btn.shadow);
+        is_mouse_hovered ? {255, 248, 237, 255} : btn.shadow);
     DrawRectangleV(btn.pos, btn.size, btn.bg);
     DrawTextEx(state->custom_font, btn.label, text_pos, btn.font_size, 2, btn.fg);
 
@@ -3569,16 +3574,16 @@ void slider(float ypos, const char *label, float *slider_offset, bool *is_drag)
         *is_drag = false;
     }
 
-    DrawTextEx(state->custom_font, label, text_pos, font_size, 2, COLOR_WHITE);
+    DrawTextEx(state->custom_font, label, text_pos, font_size, 2, {255, 248, 237, 255});
     DrawTextEx(
         state->custom_font,
         TextFormat("%d%%", (int)(*slider_offset * 100)),
         {text_pos.x, text_pos.y + 40},
-        font_size, 2, COLOR_WHITE);
-    DrawRectangleV(pos, slider_size, COLOR_BROWN);
+        font_size, 2, {255, 248, 237, 255});
+    DrawRectangleV(pos, slider_size, {123, 105, 96, 255});
     DrawRectangleV(
         {pos.x + (*slider_offset * max_offset_val), handle_pos.y},
-        handle_size, COLOR_WHITE);
+        handle_size, {255, 248, 237, 255});
 }
 
 void toast(const char *message)
@@ -3619,7 +3624,7 @@ QRect get_visible_rect(Vec2 center, float zoom)
 {
     float view_width = get_window_width();
     float view_height = get_window_height();
-    return (QRect){center.x, center.y, view_width + 10, view_height + 10};
+    return {center.x, center.y, view_width + 10, view_height + 10};
 }
 
 int get_current_time_millis()
