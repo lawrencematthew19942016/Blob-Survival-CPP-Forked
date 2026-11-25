@@ -69,3 +69,6 @@ Testing/
 
 #folder name 
 .vscode/
+
+#.txtfiles
+log.txt
