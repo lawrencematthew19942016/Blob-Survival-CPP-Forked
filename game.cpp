@@ -433,11 +433,11 @@ void draw_enemies()
             Color flash = WHITE;
             if (enemy->is_frozen)
             {
-                flash = COLOR_FLASH_FROST;
+                flash = {81, 202, 243, 255};
             }
             if (enemy->is_taking_damage)
             {
-                flash = COLOR_FLASH_HURT;
+                flash = {212, 129, 129, 255};
             }
 
             draw_spritev(
@@ -486,7 +486,7 @@ void draw_particles()
             &state->sprite_sheet,
             get_attack_sprite(FROST_WAVE),
             state->frost_wave_particles[i].pos,
-            0.6, 0, COLOR_FLASH_FROST);
+            0.6, 0, {81, 202, 243, 255});
     }
 }
 
