@@ -43,23 +43,12 @@ Afterwards, build the game, then run `game.exe` in the terminal via the repo fol
 
 A small chaotic vampire-survivors inspired . It uses a quad-tree for effecient collisions and is capable of handling thousands of enemies.
 
-
-
 You can play a wasm build of the game here - [https://bones-ai.itch.io/blob-survival](https://bones-ai.itch.io/blob-survival)
 
 ![untitled2(3)](https://github.com/user-attachments/assets/417b7127-6406-4429-8f7a-973c52bdc935)
 
-
 # Small demo on YT
 [![youtube](https://img.youtube.com/vi/kHefr2VUDvw/0.jpg)](https://youtu.be/kHefr2VUDvw)
-
-
-# Read this
-- You won't readily be able to run the code because I'm not allowed to redistribute some of the assets used in the game, i've put in some placeholder assets for you to replace.
-- The entire game is within a single `game.c` file, I use `:` tags to quickly jump between different sections, I find this to be more effective than splitting it into separate files, and there's also some `// MARK: ` that helps if you're using vscode
-- This is the trimmed down version of readme file I used to document my todo and other things while building the game
-- Refer to the end of the file for credits and links to assets and other resources I used
-- Use the `z_build.sh` to run the game
 
 # Done
 - clean up the heartbeat audio noise
