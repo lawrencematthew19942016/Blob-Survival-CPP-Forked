@@ -1,5 +1,25 @@
-# Blob Survival
-A small chaotic vampire-survivors inspired game written in C and raylib. It uses a quad-tree for effecient collisions and is capable of handling thousands of enemies.
+# Blob Survival FORKED!
+
+This is the forked version of Blob Survival. 
+
+Originally written in C and raylib converted to C++.
+
+PURPOSE: Is to learn how to convert C code into CPP. 
+
+
+
+
+
+
+For the original see - [https://github.com/bones-ai/c-blob-survival]
+
+
+
+# ORIGINAL README.MD FILE
+
+A small chaotic vampire-survivors inspired . It uses a quad-tree for effecient collisions and is capable of handling thousands of enemies.
+
+
 
 You can play a wasm build of the game here - [https://bones-ai.itch.io/blob-survival](https://bones-ai.itch.io/blob-survival)
 
