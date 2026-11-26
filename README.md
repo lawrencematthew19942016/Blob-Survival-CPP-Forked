@@ -2,17 +2,41 @@
 
 This is the forked version of Blob Survival. 
 
-Originally written in C and raylib converted to C++.
+Originally written in C and converted to C++ using raylib.
 
-PURPOSE: Is to learn how to convert C code into CPP. 
+PURPOSE: Learn how to convert C code to C++. 
+BUILD: Built with MSVC + C++20 in VS Code. 
+## HOW TO BUILD:
+
+Requires:
+- Visual Studio Build Tools (MSVC compiler + Windows SDK)
+- Raylib 6 - with the  prebuilt MSVC Windows release (`raylib-6.x_win64_msvc16`)
+- C++ 20 (for designated initialisers)
 
 
 
 
+## BUILDING
+
+Step 1: Open the terminal and load up the MSVC environment
+   "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+Step 2: From the repository folder, compile and link this: 
 
 
-For the original see - [https://github.com/bones-ai/c-blob-survival]
+  ```
+   cl *.cpp /Fe:game.exe /std:c++20 /EHsc /MD /W4 ^
+      /I "PATH\TO\raylib\include" ^
+      /link /LIBPATH: "PATH\TO\raylib\lib" ^
+      raylib.lib gdi32.lib winmm.lib user32.lib shell32.lib
+   ```
+NOTE:  Replace `PATH\TO\raylib` with where you extracted raylib.
 
+
+For the original see [https://github.com/bones-ai/c-blob-survival]
+
+
+## RUNNING THE GAME
+Afterwards, build the game, then run `game.exe` in the terminal via the repo folder, so it can also find the assets folder. 
 
 
 # ORIGINAL README.MD FILE
