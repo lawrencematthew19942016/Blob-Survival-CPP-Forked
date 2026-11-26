@@ -596,7 +596,7 @@ bool upgrade_menu_button(Button btn);
 bool button(Button btn);
 void slider(float ypos, const char *label, float *slider_offset, bool *is_drag);
 void toast(const char *message);
-void draw_text_with_shadow(const char *text, Vec2 pos, int size, Color fg, Color bg);
+void draw_text_with_shadow(const char *text, Vec2 pos, float size, Color fg, Color bg);
 
 // :utils
 int get_window_width();

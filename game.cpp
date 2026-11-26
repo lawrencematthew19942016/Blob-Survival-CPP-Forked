@@ -310,71 +310,71 @@ void draw_game()
         int font_size = 20;
         if (state->is_show_debug_gui)
         {
-            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), ColorAlpha(BLACK, 0.2));
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), ColorAlpha(BLACK, 0.2f));
             DrawTextEx(
                 state->custom_font,
                 TextFormat("Fps: %i", GetFPS()),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#level: %i", state->player_level),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#Enemies: %i", state->enemy_count),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#Bullets: %i", state->bullet_count),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("ppos: %f, %f", state->player_pos.x, state->player_pos.y),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("Wave: %d", state->wave_index),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#Enemies on screen: %d", state->temp.num_enemies_drawn),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("Spawn rate: %d", state->num_enemies_per_tick),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#Pickups: %d", state->pickups_count),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("mana: %d", state->mana_count),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("kills: %ld", state->kill_count),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#mana-particles: %d", state->mana_particles_count),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
                 TextFormat("#flame-particles: %d", state->flame_particles_count),
-                {xpos, ypos}, font_size, 2, color);
+                {xpos, ypos}, font_size, 2.0f, color);
             ypos += ypadding;
             DrawTextEx(
                 state->custom_font,
@@ -389,7 +389,7 @@ void draw_game()
             DrawTextEx(
                 state->custom_font,
                 TextFormat("%d", GetFPS()),
-                {GetScreenWidth() - 30, 4},
+                {static_cast<float>(GetScreenWidth()) - 30, 4},
                 15, 2, ColorAlpha({123, 105, 96, 255}, 0.5));
         }
     }
@@ -398,7 +398,7 @@ void draw_game()
 void draw_player()
 {
     draw_sprite(&state->sprite_sheet, {0, 9}, state->player_pos, DEFAULT_SPRITE_SCALE, 0, WHITE);
-    DrawCircleLinesV(state->player_pos, 80, ColorAlpha({123, 105, 96, 255}, 0.1));
+    DrawCircleLinesV(state->player_pos, 80, ColorAlpha({123, 105, 96, 255}, 0.1f));
 
     // :healthbar
     Vec2 size = {16, 1};
@@ -503,7 +503,7 @@ void draw_bullets()
 
         bool is_spin = state->bullets[i].type == SPIKE || state->bullets[i].type == ORBS;
         if (is_spin)
-            angle = GetRandomValue(0, 360);
+            angle = static_cast<float>(GetRandomValue(0, 360));
 
         float button_scale = 1.2f;
         if (state->bullets[i].type == ORBS)
@@ -556,7 +556,7 @@ void draw_pickups()
     {
         QPoint pt = state->query_points[i];
         Vec2 sprite_pos = {1, 9};
-        float sprite_scale = 0.4;
+        float sprite_scale = 0.4f;
         if (state->pickups[pt.id].type == MANA_SHINY)
         {
             sprite_pos = {2, 9};
@@ -585,11 +585,11 @@ void draw_toasts()
     for (int i = 0; i < state->toasts_count; i++)
     {
         Toast t = state->toasts[i];
-        Vec2 size = MeasureTextEx(state->custom_font, t.message, font_size, 2);
+        Vec2 size = MeasureTextEx(state->custom_font, t.message, font_size, 2.0f);
         Vec2 pos = {
             .x = ww / 2 - size.x / 2,
             // .x = 20,
-            .y = (wh * 0.90) + (i * spacing)};
+            .y = static_cast<float>((wh * 0.90) + (i * spacing))};
         Vec2 pos_offset = {
             pos.x - padding,
             pos.y - padding};
@@ -617,24 +617,26 @@ void reset_main_menu_enemies()
     state->main_menu_enemies_count = 0;
     for (int i = 0; i < MAX_MAIN_MENU_ENEMIES; i++)
     {
-        state->main_menu_enemies[i] = (Enemy){
+        state->main_menu_enemies[i] = {
+            .type = BAT,
+
             .pos = {
-                .x = GetRandomValue(0, SCREEN_WIDTH),
-                .y = GetRandomValue(0, SCREEN_HEIGHT)},
+                .x = static_cast<float>(GetRandomValue(0, SCREEN_WIDTH)),
+                .y = static_cast<float>(GetRandomValue(0, SCREEN_HEIGHT))},
             .health = 1,
             // .type = GetRandomValue(0, 100) > 70 ? RAM : BAT,
-            .type = BAT,
             .speed = get_enemy_speed(DEMON_PUP),
             .spawn_ts = 0,
             .is_shiny = false,
-            .is_player_found = false,
-            .player_found_ts = 0,
-            // charge dir is used for main menu
-            // to make enemies move
-            .charge_dir = get_rand_unit_vec2(),
-            .last_spawn_ts = 0,
             .is_frozen = false,
             .is_taking_damage = false,
+            .is_player_found = false,
+            // charge dir is used for main menu
+            // to make enemies move
+            .player_found_ts = 0,
+            .charge_dir = get_rand_unit_vec2(),
+            .last_spawn_ts = 0,
+
         };
         state->main_menu_enemies_count += 1;
     }
@@ -650,7 +652,7 @@ void update_main_menu_enemies()
     {
         Enemy *enemy = &state->main_menu_enemies[i];
         bool is_flip_x = enemy->pos.x > ww / 2.0f;
-        Vec2 velocity = Vector2Scale(enemy->charge_dir, 0.3);
+        Vec2 velocity = Vector2Scale(enemy->charge_dir, 0.3f);
         enemy->pos = Vector2Add(enemy->pos, velocity);
 
         if (enemy->pos.x <= 0 || enemy->pos.x >= ww)
@@ -667,11 +669,11 @@ void update_main_menu_enemies()
             &state->sprite_sheet,
             {loc.x, loc.y},
             enemy->pos,
-            get_enemy_scale(enemy->type) * 2.5,
+            static_cast<float>(get_enemy_scale(enemy->type) * 2.5f),
             0,
             is_flip_x,
             true,
-            ColorAlpha(WHITE, 0.2),
+            ColorAlpha(WHITE, 0.2f),
             i);
     }
 }
@@ -702,7 +704,7 @@ void draw_main_menu()
         {
             const char *title = "Blob";
             int font_size = 80;
-            Vec2 title_size = MeasureTextEx(state->custom_font, title, font_size, 2);
+            Vec2 title_size = MeasureTextEx(state->custom_font, title, font_size, 2.0f);
             Vec2 title_pos = {
                 ww / 2 - title_size.x / 2,
                 wh * 0.2 + sinf(time * speed) * amplitude};
@@ -729,30 +731,29 @@ void draw_main_menu()
                 state->custom_font,
                 title,
                 Vector2AddValue(title_pos, 4),
-                font_size, 3, {255, 41, 97, 255});
+                font_size, 3.0f, {255, 41, 97, 255});
             DrawTextEx(
                 state->custom_font,
                 title,
                 title_pos,
-                font_size, 3, {255, 248, 237, 255});
+                font_size, 3.0f, {255, 248, 237, 255});
         }
     }
 
-    float y_start = wh * 0.7;
+    float y_start = wh * 0.7f;
     int font_size = 35;
     // play btn
     {
         const char *text = "Play";
         Vec2 btn_size = {250, 70};
         Vec2 pos = {ww / 2 - btn_size.x / 2, y_start};
-        bool is_play = main_menu_button((Button){
-            .label = text,
-            .pos = pos,
-            .size = btn_size,
-            .bg = {123, 105, 96, 255},
-            .fg = {255, 248, 237, 255},
-            .shadow = {53, 52, 65, 255},
-            .font_size = font_size});
+        bool is_play = main_menu_button({.label = text,
+                                         .pos = pos,
+                                         .size = btn_size,
+                                         .bg = {123, 105, 96, 255},
+                                         .fg = {255, 248, 237, 255},
+                                         .shadow = {53, 52, 65, 255},
+                                         .font_size = static_cast<float>(font_size)});
         y_start += 100;
 
         // :start :play
@@ -782,14 +783,14 @@ void draw_ui()
             DrawRectangleV(
                 {0, 0},
                 {ww, wh},
-                ColorAlpha({16, 20, 31, 255}, 0.7));
+                ColorAlpha({16, 20, 31, 255}, 0.7f));
 
             // Title
             {
                 const char *text = "Game Paused";
                 int font_size = 35;
-                Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2);
-                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.1};
+                Vec2 text_size = MeasureTextEx(state->custom_font, text, font_size, 2.0f);
+                Vec2 pos = {(ww / 2) - (text_size.x / 2), wh * 0.1f};
                 draw_text_with_shadow(text, pos, font_size, {255, 248, 237, 255}, {255, 41, 97, 255});
             }
 
@@ -806,18 +807,17 @@ void draw_ui()
             // Unpause button
             {
                 const char *text = "Back";
-                float y_start = wh * 0.8;
+                float y_start = wh * 0.8f;
                 int font_size = 35;
                 Vec2 btn_size = {250, 70};
                 Vec2 pos = {ww / 2 - btn_size.x / 2, y_start};
-                bool is_back = upgrade_menu_button((Button){
-                    .label = text,
-                    .pos = pos,
-                    .size = btn_size,
-                    .bg = {123, 105, 96, 255},
-                    .fg = {255, 248, 237, 255},
-                    .shadow = {123, 105, 96, 255},
-                    .font_size = font_size});
+                bool is_back = upgrade_menu_button({.label = text,
+                                                    .pos = pos,
+                                                    .size = btn_size,
+                                                    .bg = {123, 105, 96, 255},
+                                                    .fg = {255, 248, 237, 255},
+                                                    .shadow = {123, 105, 96, 255},
+                                                    .font_size = static_cast<float>(font_size)});
 
                 if (is_back || IsKeyPressed(KEY_ESCAPE))
                 {
@@ -839,7 +839,7 @@ void draw_ui()
                 int max_current_level_mana = get_level_mana_threshold(state->player_level);
                 int ww = GetScreenWidth();
                 float percentage_mana = (float)state->mana_count / max_current_level_mana;
-                DrawRectangleV(Vector2Zero(), {percentage_mana * ww, 10}, COLOR_LIGHT_PINK);
+                DrawRectangleV(Vector2Zero(), {percentage_mana * ww, 10}, {243, 216, 216, 255});
             }
 
             // Kill count
@@ -941,17 +941,16 @@ void draw_ui()
             // btn
             {
                 const char *text = "Retry";
-                float y_start = wh * 0.8;
+                float y_start = wh * 0.8f;
                 Vec2 btn_size = {250, 70};
                 Vec2 pos = {ww / 2 - btn_size.x / 2, y_start};
-                bool is_play = upgrade_menu_button((Button){
-                    .label = text,
-                    .pos = pos,
-                    .size = btn_size,
-                    .bg = {123, 105, 96, 255},
-                    .fg = {255, 248, 237, 255},
-                    .shadow = {123, 105, 96, 255},
-                    .font_size = font_size});
+                bool is_play = upgrade_menu_button({.label = text,
+                                                    .pos = pos,
+                                                    .size = btn_size,
+                                                    .bg = {123, 105, 96, 255},
+                                                    .fg = {255, 248, 237, 255},
+                                                    .shadow = {123, 105, 96, 255},
+                                                    .font_size = static_cast<float>(font_size)});
 
                 // :retry :restart
                 if (is_play || IsKeyPressed(KEY_ENTER))
@@ -1043,7 +1042,8 @@ void draw_upgrade_option(UpgradeType type, int level, Vec2 *pos)
     Vec2 size = {400, 60};
     float gap = 80.0f;
 
-    char *label = "Err";
+    // cpp needs a const before the char
+    const char *label = "Err";
     switch (type)
     {
     case BULLET_UPGRADE:
@@ -1075,14 +1075,13 @@ void draw_upgrade_option(UpgradeType type, int level, Vec2 *pos)
     bool is_enabled = false;
     if (level > 0)
     {
-        is_enabled = upgrade_menu_button((Button){
-            .label = label,
-            .pos = *pos,
-            .size = size,
-            .bg = {123, 105, 96, 255},
-            .fg = {255, 248, 237, 255},
-            .shadow = {123, 105, 96, 255},
-            .font_size = font_size});
+        is_enabled = upgrade_menu_button({.label = label,
+                                          .pos = *pos,
+                                          .size = size,
+                                          .bg = {123, 105, 96, 255},
+                                          .fg = {255, 248, 237, 255},
+                                          .shadow = {123, 105, 96, 255},
+                                          .font_size = static_cast<float>(font_size)});
         pos->y += gap;
     }
 
@@ -1228,7 +1227,7 @@ void update_player()
         {
             if (GetRandomValue(0, 100) > 90)
             {
-                state->player_health += 0.05;
+                state->player_health += 0.05f;
             }
         }
     }
@@ -1292,16 +1291,15 @@ void update_enemies()
                     // valid kill, leave mana behind
                     if (state->pickups_count < MAX_PICKUPS)
                     {
-                        state->pickups[state->pickups_count] = (Pickup){
+                        state->pickups[state->pickups_count] = {
                             .pos = {enemies[i].pos.x, enemies[i].pos.y},
                             .type = get_pickup_spawn_type(enemies[i].is_shiny),
                             .spawn_ts = get_current_time_millis(),
                             .is_collected = false};
 
-                        qtree_insert(state->pickups_qtree, (QPoint){
-                                                               .x = enemies[i].pos.x,
-                                                               .y = enemies[i].pos.y,
-                                                               .id = state->pickups_count});
+                        qtree_insert(state->pickups_qtree, {.x = enemies[i].pos.x,
+                                                            .y = enemies[i].pos.y,
+                                                            .id = state->pickups_count});
                         state->pickups_count++;
                     }
                 }
@@ -1315,10 +1313,9 @@ void update_enemies()
 
             for (int i = 0; i < *enemy_count; i++)
             {
-                qtree_insert(state->enemy_qtree, (QPoint){
-                                                     state->enemies[i].pos.x,
-                                                     state->enemies[i].pos.y,
-                                                     i});
+                qtree_insert(state->enemy_qtree, {state->enemies[i].pos.x,
+                                                  state->enemies[i].pos.y,
+                                                  i});
             }
         }
     }
@@ -1343,7 +1340,8 @@ void update_enemies()
             state->enemy_qtree,
             {bullets[i].pos.x - 2.5f,
              bullets[i].pos.y - 2.5f,
-             bullet_size, bullet_size},
+             static_cast<float>(bullet_size),
+             static_cast<float>(bullet_size)},
             state->query_points,
             &state->num_query_points);
 
@@ -1623,14 +1621,16 @@ void update_enemies()
                     if (time_elapsed > 1000 && state->enemy_bullet_count < MAX_ENEMY_BULLETS)
                     {
                         // fire a bullet
-                        state->enemy_bullets[state->enemy_bullet_count] = (Bullet){
+                        state->enemy_bullets[state->enemy_bullet_count] = {
                             .pos = enemies[i].pos,
                             .direction = player_dir,
-                            .spawnTs = get_current_time_millis(),
                             .strength = 10,
                             .penetration = 1,
-                            .type = MAGE_BULLET,
+
+                            .spawnTs = get_current_time_millis(),
                             .speed = get_attack_speed(MAGE_BULLET),
+
+                            .type = MAGE_BULLET,
                             .angle = 0};
                         state->enemy_bullet_count += 1;
 
@@ -1680,14 +1680,14 @@ void update_enemies()
                             if (state->enemy_bullet_count > MAX_ENEMY_BULLETS)
                                 break;
 
-                            state->enemy_bullets[state->enemy_bullet_count] = (Bullet){
+                            state->enemy_bullets[state->enemy_bullet_count] = {
                                 .pos = enemies[i].pos,
                                 .direction = bullet_dir,
-                                .spawnTs = get_current_time_millis(),
                                 .strength = 10,
                                 .penetration = 1,
-                                .type = DEMON_BULLET,
+                                .spawnTs = get_current_time_millis(),
                                 .speed = get_attack_speed(DEMON_BULLET),
+                                .type = DEMON_BULLET,
                                 .angle = 0};
                             state->enemy_bullet_count += 1;
                         }
@@ -1719,21 +1719,21 @@ void update_enemies()
                                 .y = sinf(angle) * spawn_distance};
 
                             // Spawn the pup
-                            enemies[*enemy_count] = (Enemy){
+                            enemies[*enemy_count] = {
+                                .type = DEMON_PUP,
                                 .pos = {
                                     .x = enemies[i].pos.x + spawn_offset.x,
                                     .y = enemies[i].pos.y + spawn_offset.y},
                                 .health = get_enemy_health(DEMON_PUP, false),
-                                .type = DEMON_PUP,
                                 .speed = get_enemy_speed(DEMON_PUP),
                                 .spawn_ts = get_current_time_millis(),
                                 .is_shiny = false,
+                                .is_frozen = false,
+                                .is_taking_damage = false,
                                 .is_player_found = false,
                                 .player_found_ts = 0,
                                 .charge_dir = Vector2Zero(),
                                 .last_spawn_ts = 0,
-                                .is_frozen = false,
-                                .is_taking_damage = false,
                             };
 
                             *enemy_count += 1;
@@ -1791,25 +1791,27 @@ void update_enemies()
                 }
 
                 Vec2 randPos = Vector2Zero();
-                float diagonal_length = sqrt(ww * ww + wh * wh) / 2;
+                float diagonal_length = static_cast<float>(sqrt(ww * ww + wh * wh) / 2.0f);
                 randPos = get_rand_pos_around_point(player_pos, diagonal_length, diagonal_length + 30);
 
-                int rand_enemy = get_next_enemy_spawn_type();
+                EnemyType rand_enemy = get_next_enemy_spawn_type();
                 bool is_shiny = GetRandomValue(1, 100) > (100 - state->stats.shiny_chance);
                 state->timer.enemy_spawn_ts = get_current_time_millis();
-                enemies[*enemy_count] = (Enemy){
+                enemies[*enemy_count] = {
+                    .type = rand_enemy,
+
                     .pos = randPos,
                     .health = get_enemy_health(rand_enemy, is_shiny),
-                    .type = rand_enemy,
-                    .speed = get_enemy_speed(rand_enemy),
+                    .speed = static_cast<float>(get_enemy_speed(rand_enemy)),
                     .spawn_ts = get_current_time_millis(),
                     .is_shiny = is_shiny,
+                    .is_frozen = false,
+                    .is_taking_damage = false,
                     .is_player_found = false,
                     .player_found_ts = 0,
                     .charge_dir = Vector2Zero(),
                     .last_spawn_ts = 0,
-                    .is_frozen = false,
-                    .is_taking_damage = false};
+                };
 
                 *enemy_count += 1;
             }
@@ -1919,7 +1921,7 @@ void update_bullets()
             bool enemy_found = false;
             Vec2 enemy_pos = Vector2Zero();
 
-            play_sound_modulated(&state->sound_bullet_fire, 0.1);
+            play_sound_modulated(&state->sound_bullet_fire, 0.1f);
 
             state->num_query_points = 0;
             qtree_query(
@@ -1962,18 +1964,20 @@ void update_bullets()
                 {
                     int spread = (int)state->stats.bullet_spread;
                     // TODO probably have to clamp the spread angle here
-                    angle_spread = GetRandomValue(-spread, spread);
+                    angle_spread = static_cast<float>(GetRandomValue(-spread, spread));
                 }
 
                 dir = rotate_vector(dir, angle_spread);
-                bullets[*bullet_count] = (Bullet){
+                bullets[*bullet_count] = {
                     .pos = player_pos,
                     .direction = dir,
-                    .spawnTs = get_current_time_millis(),
                     .strength = state->stats.bullet_damage,
-                    .penetration = state->stats.bullet_penetration,
-                    .type = BULLET,
+                    // converting a  int into a float
+                    .penetration = static_cast<int>(state->stats.bullet_penetration),
+                    .spawnTs = get_current_time_millis(),
                     .speed = get_attack_speed(BULLET),
+
+                    .type = BULLET,
                     .angle = 0};
                 *bullet_count += 1;
             }
@@ -1991,14 +1995,16 @@ void update_bullets()
                 Vec2 dir = get_rand_unit_vec2();
                 if (*bullet_count < MAX_BULLETS)
                 {
-                    bullets[*bullet_count] = (Bullet){
+                    bullets[*bullet_count] = {
                         .pos = player_pos,
                         .direction = dir,
-                        .spawnTs = get_current_time_millis(),
                         .strength = state->stats.splinter_damage,
-                        .penetration = state->stats.splinter_penetration,
-                        .type = SPLINTER,
+                        .penetration = static_cast<int>(state->stats.splinter_penetration),
+                        .spawnTs = get_current_time_millis(),
+
                         .speed = get_attack_speed(SPLINTER),
+                        .type = SPLINTER,
+
                         .angle = 0};
                     *bullet_count += 1;
                 }
@@ -2015,20 +2021,21 @@ void update_bullets()
                 Vec2 dir = get_rand_unit_vec2();
                 if (*bullet_count < MAX_BULLETS)
                 {
-                    bullets[*bullet_count] = (Bullet){
+                    bullets[*bullet_count] = {
                         .pos = player_pos,
                         .direction = dir,
-                        .spawnTs = get_current_time_millis(),
                         .strength = state->stats.orbs_damage,
                         .penetration = INT_MAX,
-                        .type = ORBS,
+                        .spawnTs = get_current_time_millis(),
                         .speed = get_attack_speed(ORBS),
+                        .type = ORBS,
+
                         .angle = 0};
                     *bullet_count += 1;
                 }
             }
             state->timer.orbs_ts = get_current_time_millis();
-            play_sound_modulated(&state->sound_orb, 0.3);
+            play_sound_modulated(&state->sound_orb, 0.3f);
         }
     }
 
@@ -2090,15 +2097,16 @@ void update_bullets()
             Vec2 dir = get_rand_unit_vec2();
             if (*bullet_count < MAX_BULLETS)
             {
-                bullets[*bullet_count] = (Bullet){
+                bullets[*bullet_count] = {
                     .pos = player_pos,
                     .direction = dir,
-                    .spawnTs = get_current_time_millis(),
                     .strength = state->stats.spike_damage,
                     .penetration = 10,
-                    .type = SPIKE,
+                    .spawnTs = get_current_time_millis(),
+
                     .speed = get_attack_speed(SPIKE),
-                    .angle = GetRandomValue(0, 360)};
+                    .type = SPIKE,
+                    .angle = static_cast<float>(GetRandomValue(0, 360))};
                 *bullet_count += 1;
             }
             state->timer.spike_ts = get_current_time_millis();
@@ -2117,13 +2125,15 @@ void update_bullets()
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    state->flame_particles[state->flame_particles_count] = (Particle){
+                    state->flame_particles[state->flame_particles_count] = {
                         .pos = state->player_pos,
                         .dir = rotate_vector(
                             state->player_heading_dir,
                             GetRandomValue(-state->stats.flame_spread, state->stats.flame_spread)),
+
+                        .spawn_ts = get_current_time_millis(),
                         .lifetime = PARTICLE_LIFETIME,
-                        .spawn_ts = get_current_time_millis()};
+                    };
                     state->flame_particles_count += 1;
                 }
             }
@@ -2132,7 +2142,7 @@ void update_bullets()
             {
                 // TODO playing this on a low interval breaks my speakers
                 if (!GOD)
-                    play_sound_modulated(&state->sound_flamethrower, 0.9);
+                    play_sound_modulated(&state->sound_flamethrower, 0.9f);
 
                 state->timer.flame_ts = get_current_time_millis();
             }
@@ -2152,11 +2162,11 @@ void update_bullets()
             {
                 if (state->frost_wave_particles_count <= MAX_FROST_WAVE_PARTICLES)
                 {
-                    state->frost_wave_particles[state->frost_wave_particles_count] = (Particle){
+                    state->frost_wave_particles[state->frost_wave_particles_count] = {
                         .pos = state->player_pos,
                         .dir = get_rand_unit_vec2(),
-                        .lifetime = state->stats.frost_wave_lifetime,
-                        .spawn_ts = get_current_time_millis()};
+                        .spawn_ts = get_current_time_millis(),
+                        .lifetime = static_cast<int>(state->stats.frost_wave_lifetime)};
                     state->frost_wave_particles_count += 1;
                 }
             }
@@ -2164,7 +2174,7 @@ void update_bullets()
             if (is_shoot_frost_wave)
             {
                 state->timer.frost_wave_ts = get_current_time_millis();
-                play_sound_modulated(&state->sound_frost_wave, 0.4);
+                play_sound_modulated(&state->sound_frost_wave, 0.4f);
             }
         }
     }
@@ -2274,7 +2284,7 @@ void update_pickups()
             }
             else if (pickup_type == HEALTH)
             {
-                play_sound_modulated(&state->sound_health_pickup, 0.9);
+                play_sound_modulated(&state->sound_health_pickup, 0.9f);
                 state->player_health = Clamp(state->player_health + 100, 0, MAX_PLAYER_HEALTH);
             }
             else
@@ -2367,13 +2377,13 @@ void sounds_update()
         float health_ratio = state->player_health / MAX_PLAYER_HEALTH;
         if (health_ratio < 0.7)
         {
-            state->sound_intensity = health_ratio + 0.3;
-            float tempo = 1.0f + (1.0f - health_ratio * 2.0);
+            state->sound_intensity = health_ratio + 0.3f;
+            float tempo = 1.0f + (1.0f - health_ratio * 2.0f);
             tempo = fmax(1.0f, fmin(2.0f, tempo));
 
             SetMusicVolume(state->sound_heartbeat, 0.3f + (1.0f - health_ratio));
             SetMusicPitch(state->sound_heartbeat, tempo);
-            SetMusicVolume(state->sound_bg, health_ratio + 0.3);
+            SetMusicVolume(state->sound_bg, health_ratio + 0.3f);
         }
         else
         {
@@ -2409,20 +2419,20 @@ void decorations_init()
     for (int i = 0; i < num_decorations_in_view; i++)
     {
         int rand_decoration = GetRandomValue(0, TOTAL_NUM_DECORATIONS);
-        state->decorations[i] = (Decoration){
+        state->decorations[i] = {
             .pos = {
-                GetRandomValue(0, state->world_dims.width),
-                GetRandomValue(0, state->world_dims.height)},
+                static_cast<float>(GetRandomValue(0, state->world_dims.width)),
+                static_cast<float>(GetRandomValue(0, state->world_dims.height))},
             .decoration_idx = rand_decoration};
     }
 
     for (int i = num_decorations_in_view; i < (NUM_DECORATIONS - num_decorations_in_view); i++)
     {
         int rand_decoration = GetRandomValue(0, TOTAL_NUM_DECORATIONS);
-        state->decorations[i] = (Decoration){
+        state->decorations[i] = {
             .pos = {
-                GetRandomValue(0, state->world_dims.width),
-                GetRandomValue(0, state->world_dims.height)},
+                static_cast<float>(GetRandomValue(0, state->world_dims.width)),
+                static_cast<float>(GetRandomValue(0, state->world_dims.height))},
             .decoration_idx = rand_decoration};
     }
 }
@@ -2438,7 +2448,7 @@ void update_decorations()
         {
             int rand_decoration = GetRandomValue(0, TOTAL_NUM_DECORATIONS);
             Vec2 rand_pos = get_rand_pos_around_point(state->player_pos, 200.0f, 300.0f);
-            state->decorations[i] = (Decoration){
+            state->decorations[i] = {
                 .pos = rand_pos,
                 .decoration_idx = rand_decoration};
         }
@@ -2555,11 +2565,11 @@ void handle_debug_inputs()
     {
         if (mouse_diff > 0)
         {
-            state->camera.zoom += 0.1;
+            state->camera.zoom += 0.1f;
         }
         else
         {
-            state->camera.zoom -= 0.1;
+            state->camera.zoom -= 0.1f;
         }
     }
 }
@@ -2567,23 +2577,23 @@ void handle_debug_inputs()
 // :resize
 void handle_window_resize()
 {
-    int ww = GetScreenWidth();
-    int wh = GetScreenHeight();
+    float ww = (float)GetScreenWidth();
+    float wh = (float)GetScreenHeight();
 
     float target_aspect = (float)VIRT_WIDTH / (float)VIRT_HEIGHT;
-    int scaled_width, scaled_height;
+    float scaled_width, scaled_height;
 
     if ((float)ww / wh > target_aspect)
     {
         // Window wider than target aspect ratio
         scaled_height = wh;
-        scaled_width = (int)(scaled_height * target_aspect);
+        scaled_width = (float)(scaled_height * target_aspect);
     }
     else
     {
         // Window taller than target aspect ratio
         scaled_width = ww;
-        scaled_height = (int)(scaled_width / target_aspect);
+        scaled_height = (float)(scaled_width / target_aspect);
     }
 
     state->dest_rect = {
@@ -2854,7 +2864,7 @@ Vec2 get_enemy_sprite_pos(EnemyType type, bool is_shiny)
     switch (type)
     {
     case BAT:
-        return is_shiny ? {0, 4} : {0, 3};
+        return is_shiny ? Vec2{0, 4} : Vec2{0, 3};
     case RAM:
         return {1, 3};
     case MAGE:
@@ -2877,13 +2887,13 @@ float get_enemy_scale(EnemyType type)
     case BAT:
         return DEFAULT_SPRITE_SCALE;
     case RAM:
-        return DEFAULT_SPRITE_SCALE + 0.3;
+        return DEFAULT_SPRITE_SCALE + 0.3f;
     case MAGE:
-        return DEFAULT_SPRITE_SCALE + 0.3;
+        return DEFAULT_SPRITE_SCALE + 0.3f;
     case REAPER:
-        return DEFAULT_SPRITE_SCALE + 0.3;
+        return DEFAULT_SPRITE_SCALE + 0.3f;
     case DEMON:
-        return DEFAULT_SPRITE_SCALE + 0.6;
+        return DEFAULT_SPRITE_SCALE + 0.6f;
     case DEMON_PUP:
         return DEFAULT_SPRITE_SCALE;
     default:
@@ -2896,7 +2906,7 @@ float get_enemy_health(EnemyType type, bool is_shiny)
     switch (type)
     {
     case BAT:
-        return is_shiny ? 200 : 15;
+        return is_shiny ? 200.0f : 15.0f;
     case RAM:
         return 150;
     case MAGE:
@@ -3126,7 +3136,7 @@ float get_stat_increment(ShopUpgradeType type)
     case SPIKE_INTERVAL:
         return -10;
     case SPIKE_SPEED:
-        return 0.2;
+        return 0.2f;
     case SPIKE_COUNT:
         return 5;
     case SPIKE_DAMAGE:
@@ -3502,7 +3512,7 @@ bool upgrade_menu_button(Button btn)
     int padding = 1;
     DrawRectangleV(
         Vector2SubtractValue(btn.pos, padding),
-        Vector2AddValue(btn.size, padding * 2),
+        Vector2AddValue(btn.size, padding * 2.0f),
         {16, 20, 31, 255});
     DrawTextureNPatch(
         state->sprite_sheet,
@@ -3533,7 +3543,7 @@ bool button(Button btn)
     DrawRectangleV(
         is_mouse_hovered ? pos_offset_rev : pos_offset,
         is_mouse_hovered ? size_offset : btn.size,
-        is_mouse_hovered ? {255, 248, 237, 255} : btn.shadow);
+        is_mouse_hovered ? Color{255, 248, 237, 255} : btn.shadow);
     DrawRectangleV(btn.pos, btn.size, btn.bg);
     DrawTextEx(state->custom_font, btn.label, text_pos, btn.font_size, 2, btn.fg);
 
@@ -3574,12 +3584,12 @@ void slider(float ypos, const char *label, float *slider_offset, bool *is_drag)
         *is_drag = false;
     }
 
-    DrawTextEx(state->custom_font, label, text_pos, font_size, 2, {255, 248, 237, 255});
+    DrawTextEx(state->custom_font, label, text_pos, font_size, 2.0f, {255, 248, 237, 255});
     DrawTextEx(
         state->custom_font,
         TextFormat("%d%%", (int)(*slider_offset * 100)),
         {text_pos.x, text_pos.y + 40},
-        font_size, 2, {255, 248, 237, 255});
+        font_size, 2.0f, {255, 248, 237, 255});
     DrawRectangleV(pos, slider_size, {123, 105, 96, 255});
     DrawRectangleV(
         {pos.x + (*slider_offset * max_offset_val), handle_pos.y},
@@ -3593,17 +3603,17 @@ void toast(const char *message)
         return;
     }
 
-    state->toasts[state->toasts_count] = (Toast){
+    state->toasts[state->toasts_count] = {
         .message = message,
         .spawn_ts = get_current_time_millis()};
     state->toasts_count += 1;
 }
 
-void draw_text_with_shadow(const char *text, Vec2 pos, int size, Color fg, Color bg)
+void draw_text_with_shadow(const char *text, Vec2 pos, float size, Color fg, Color bg)
 {
     Vec2 pos_offset = Vector2AddValue(pos, 2);
-    DrawTextEx(state->custom_font, text, pos_offset, size, 2, bg);
-    DrawTextEx(state->custom_font, text, pos, size, 2, fg);
+    DrawTextEx(state->custom_font, text, pos_offset, size, 2.0f, bg);
+    DrawTextEx(state->custom_font, text, pos, size, 2.0f, fg);
 }
 
 // MARK: :utils
@@ -3622,8 +3632,8 @@ int get_window_height()
 
 QRect get_visible_rect(Vec2 center, float zoom)
 {
-    float view_width = get_window_width();
-    float view_height = get_window_height();
+    float view_width = static_cast<float>(get_window_width());
+    float view_height = static_cast<float>(get_window_height());
     return {center.x, center.y, view_width + 10, view_height + 10};
 }
 
