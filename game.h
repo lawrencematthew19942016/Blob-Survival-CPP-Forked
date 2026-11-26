@@ -1,3 +1,4 @@
+#include "mainheaderfile.h"
 #ifndef GAME_H
 #define GAME_H
 
@@ -11,15 +12,15 @@
 
 #define VERSION "v0.0.1"
 #if IS_MOBILE
-    #define VIRT_WIDTH 144
-    #define VIRT_HEIGHT 320
-    #define SCREEN_WIDTH VIRT_WIDTH * 3
-    #define SCREEN_HEIGHT VIRT_HEIGHT * 3
+#define VIRT_WIDTH 144
+#define VIRT_HEIGHT 320
+#define SCREEN_WIDTH VIRT_WIDTH * 3
+#define SCREEN_HEIGHT VIRT_HEIGHT * 3
 #else
-    #define VIRT_WIDTH 320
-    #define VIRT_HEIGHT 180
-    #define SCREEN_WIDTH VIRT_WIDTH * 4
-    #define SCREEN_HEIGHT VIRT_HEIGHT * 4
+#define VIRT_WIDTH 320
+#define VIRT_HEIGHT 180
+#define SCREEN_WIDTH VIRT_WIDTH * 4
+#define SCREEN_HEIGHT VIRT_HEIGHT * 4
 #endif
 #define FPS 144
 
@@ -77,15 +78,15 @@
 
 // MARK: :colors
 
-#define COLOR_DARK_BLUE (Color) { 16, 20, 31, 255 }
-#define COLOR_BROWN (Color) { 123, 105, 96, 255 }
-#define COLOR_WHITE (Color) { 255, 248, 237, 255 }
-#define COLOR_RED (Color) { 255, 41, 97, 255 }
-#define COLOR_SKY_BLUE (Color) { 81, 202, 243, 255 }
-#define COLOR_CEMENT (Color) { 53, 52, 65, 255 }
-#define COLOR_LIGHT_PINK (Color) { 243, 216, 216, 255 }
+#define COLOR_DARK_BLUE (Color){16, 20, 31, 255}
+#define COLOR_BROWN (Color){123, 105, 96, 255}
+#define COLOR_WHITE (Color){255, 248, 237, 255}
+#define COLOR_RED (Color){255, 41, 97, 255}
+#define COLOR_SKY_BLUE (Color){81, 202, 243, 255}
+#define COLOR_CEMENT (Color){53, 52, 65, 255}
+#define COLOR_LIGHT_PINK (Color){243, 216, 216, 255}
 
-#define COLOR_FLASH_HURT (Color) { 212, 129, 129, 255 }
+#define COLOR_FLASH_HURT (Color){212, 129, 129, 255}
 #define COLOR_FLASH_FROST COLOR_SKY_BLUE
 
 // MARK: :alias
@@ -95,7 +96,8 @@ typedef Rectangle Rect;
 
 // MARK: :enums
 
-typedef enum {
+typedef enum
+{
     MAIN_MENU,
     UPGRADE_MENU,
     IN_GAME,
@@ -103,7 +105,8 @@ typedef enum {
     DEATH
 } GameScreen;
 
-typedef enum {
+typedef enum
+{
     BAT,
     RAM,
     MAGE,
@@ -112,7 +115,8 @@ typedef enum {
     DEMON_PUP,
 } EnemyType;
 
-typedef enum {
+typedef enum
+{
     // One shot bullets
     BULLET,
     SPLINTER,
@@ -136,7 +140,8 @@ typedef enum {
 } AttackType;
 
 // :shop
-typedef enum {
+typedef enum
+{
     BULLET_INTERVAL,
     BULLET_COUNT,
     BULLET_SPREAD,
@@ -174,14 +179,16 @@ typedef enum {
     SHINY_CHANCE
 } ShopUpgradeType;
 
-typedef enum {
+typedef enum
+{
     MANA,
     MANA_SHINY,
     HEALTH,
     MAGNET
 } PickupType;
 
-typedef enum {
+typedef enum
+{
     /**
      * When adding a new upgrade,
      * - add the enum value here
@@ -200,7 +207,8 @@ typedef enum {
     SHINY_UPGRADE,
 } UpgradeType;
 
-typedef enum {
+typedef enum
+{
     GAME_OPEN,
     GAME_START,
     GAME_OVER,
@@ -208,16 +216,19 @@ typedef enum {
 
 // MARK: :structs
 
-typedef struct {
+typedef struct
+{
     float x, y, w, h;
 } QRect;
 
-typedef struct {
+typedef struct
+{
     float x, y;
     int id;
 } QPoint;
 
-typedef struct QTree_ {
+typedef struct QTree_
+{
     bool is_divided;
     QRect boundary;
     QPoint *points;
@@ -230,7 +241,8 @@ typedef struct QTree_ {
 } QTree;
 
 // :bullet
-typedef struct {
+typedef struct
+{
     Vec2 pos;
     Vec2 direction;
     float strength;
@@ -243,7 +255,8 @@ typedef struct {
     float angle;
 } Bullet;
 
-typedef struct {
+typedef struct
+{
     EnemyType type;
     Vec2 pos;
     float health;
@@ -267,26 +280,30 @@ typedef struct {
     int last_spawn_ts;
 } Enemy;
 
-typedef struct {
+typedef struct
+{
     Vec2 pos;
     int decoration_idx;
 } Decoration;
 
-typedef struct {
+typedef struct
+{
     Vec2 pos;
     PickupType type;
     int spawn_ts;
     bool is_collected;
 } Pickup;
 
-typedef struct {
+typedef struct
+{
     Vec2 pos;
     Vec2 dir;
     int spawn_ts;
     int lifetime;
 } Particle;
 
-typedef struct {
+typedef struct
+{
     const char *label;
     Vec2 pos;
     Vec2 size;
@@ -297,10 +314,11 @@ typedef struct {
 } Button;
 
 // :timers
-typedef struct {
+typedef struct
+{
     /**
      * When adding new timers,
-     * remember to update the timer state to handle 
+     * remember to update the timer state to handle
      * pause/resume properly
      */
 
@@ -327,7 +345,8 @@ typedef struct {
 } Timers;
 
 // :stat
-typedef struct {
+typedef struct
+{
     /**
      * Steps to add a new shop item:
      * - Add a new enum field
@@ -374,7 +393,8 @@ typedef struct {
     float shiny_chance;
 } Stats;
 
-typedef struct {
+typedef struct
+{
     int bullet_level;
     int splinter_level;
     int spike_level;
@@ -385,19 +405,22 @@ typedef struct {
     int shiny_level;
 } Upgrades;
 
-typedef struct {
+typedef struct
+{
     const char *message;
     int spawn_ts;
 } Toast;
 
-typedef struct {
+typedef struct
+{
     int ct;
     int num_enemies_drawn;
 } Temp;
 
 // MARK: :gamestate
 
-typedef struct {
+typedef struct
+{
     // Raylib
     Camera2D camera;
     Texture2D sprite_sheet;
@@ -535,7 +558,7 @@ void handle_window_resize();
 void handle_virtual_joystick_input();
 
 // :quadtree :qtree
-QTree* qtree_create(QRect boundary);
+QTree *qtree_create(QRect boundary);
 void qtree_destroy(QTree *qtree);
 void qtree_clear(QTree *qtree);
 void qtree_reset_boundary(QTree *qtree, QRect rect);
@@ -573,7 +596,7 @@ bool upgrade_menu_button(Button btn);
 bool button(Button btn);
 void slider(float ypos, const char *label, float *slider_offset, bool *is_drag);
 void toast(const char *message);
-void draw_text_with_shadow(const char *text, Vec2 pos, int size, Color fg, Color bg);
+void draw_text_with_shadow(const char *text, Vec2 pos, float size, Color fg, Color bg);
 
 // :utils
 int get_window_width();
@@ -595,7 +618,7 @@ void print(const char *text);
 void printe(const char *text);
 
 // :ana
-void* post_analytics_thread(void* arg);
+void *post_analytics_thread(void *arg);
 void post_analytics_async(AnalyticsType type);
 
 // :main
